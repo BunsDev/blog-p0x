@@ -3,7 +3,7 @@ layout:     post
 title:      HAProxy 反向代理的使用
 subtitle:   "High availability"
 date:       2015-06-06 21:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/post-bg-2015.jpg
 permalink:  /haproxy-tutorial/

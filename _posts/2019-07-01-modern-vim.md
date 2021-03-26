@@ -3,7 +3,7 @@ layout:     post
 title:      使用 neovim 打造一个现代化的编辑器
 subtitle:
 date:       2019-07-01 10:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/in-post/modern-vim/neovim-logo.png
 permalink:  /modern-vim/

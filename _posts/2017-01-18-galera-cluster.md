@@ -3,7 +3,7 @@ layout:     post
 title:      Galera Cluster Essential Guide
 subtitle:   The True Multi-master Cluster
 date:       2017-01-18 19:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/in-post/galera-cluster/galera-cluster.jpg
 permalink:  /galera-cluster/

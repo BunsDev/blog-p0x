@@ -3,7 +3,7 @@ layout:     post
 title:      Linux中断和中断处理
 subtitle:   
 date:       2016-08-23 23:10:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/post-bg-linux-interrupt.jpg
 permalink:  /linux-interrupt/

@@ -3,7 +3,7 @@ layout:     post
 title:      RabbitMQ 和 oslo.messaging
 subtitle:
 date:       2016-08-23 23:10:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/post-bg-rabbitmq-and-oslo-messaging.jpg
 permalink:  /rabbitmq-and-oslo-messaging/

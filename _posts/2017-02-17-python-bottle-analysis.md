@@ -3,7 +3,7 @@ layout:     post
 title:      Python bottle 源码解析
 subtitle:   
 date:       2017-02-17 19:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/in-post/python-bottle/bottle.jpg
 permalink:  /python-bottle/

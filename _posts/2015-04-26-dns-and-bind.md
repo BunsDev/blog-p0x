@@ -3,7 +3,7 @@ layout:     post
 title:      DNS 与 BIND
 subtitle:   ""
 date:       2015-04-26 23:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/post-bg-2015.jpg
 permalink:  /dns-and-bind/

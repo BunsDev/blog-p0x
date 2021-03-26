@@ -3,7 +3,7 @@ layout:     post
 title:      Python WSGI 初探
 subtitle:   
 date:       2017-02-06 19:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/in-post/python-wsgi/web.jpg
 permalink:  /python-wsgi/

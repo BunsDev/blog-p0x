@@ -3,7 +3,7 @@ layout:     post
 title:      最新版本和平精英发热问题原因及解决办法
 subtitle:
 date:       2019-05-16 19:00:00
-author:     Liao
+author:     Paco
 catalog:    true
 header-img: img/in-post/pubg-resolution/pubg.jpg
 permalink:  /pubg-resolution/
