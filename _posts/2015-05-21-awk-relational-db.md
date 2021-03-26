@@ -211,13 +211,13 @@ capitals 文件：
               exit
       if (prefix($0) == prefix(gp[1])) # 第一个字段相同
           for (i = 1; i <= ng; i++)
-              print $0, suffix(gp[i])  # 将结果合并 
+              print $0, suffix(gp[i])  # 将结果合并
     }
 
-    function getgroup() {   # 将有相同前缀的条目放入到 gp[1..ng] 数组中 
-        if (getone(file2, gp, 1) <= 0)  # 读取结束 
+    function getgroup() {   # 将有相同前缀的条目放入到 gp[1..ng] 数组中
+        if (getone(file2, gp, 1) <= 0)  # 读取结束
             return 0
-        for (ng = 2; getone(file2, gp, ng) > 0; ng++) # ng 的值需要每次初始化为 2 
+        for (ng = 2; getone(file2, gp, ng) > 0; ng++) # ng 的值需要每次初始化为 2
             if (prefix(gp[ng]) != prefix(gp[1])) {
                 unget(gp[ng]) # 多读了，将这一行返回给下次读取
                 return ng-1
@@ -341,7 +341,7 @@ capitals 文件：
                 cmd[nrel, ++ncmd[nrel]] = substr($0, index($0, "!")+1)
             else if ($0 ~ /^[ \t]*[A-Za-z]+[ \t]*$/)     # 匹配表的属性
                 attr[nrel, $1] = ++nattr[nrel]
-            else if ($0 !~ /^[ \t]*$/)      # 不符合格式的行 
+            else if ($0 !~ /^[ \t]*$/)      # 不符合格式的行
                 print "bad line in relfile:", $0
     }
     function doquery(s,    i, j) {
@@ -383,7 +383,7 @@ capitals 文件：
 
 我们用 `q` 写一个查询语句传递给 `qawk` 解释执行：
 
-	[root@node1 awk]# echo '{ print $country, $population, $population/$area, $capital }' | ./qawk 
+	[root@node1 awk]# echo '{ print $country, $population, $population/$area, $capital }' | ./qawk
 	query: awk -F'\t' -v OFS='\t' '{ print $1, $3, $3/$2, $5 }' cc
 	Brazil	134	0.0407791	Brasilia
 	Canada	25	0.00649013	Ottawa
@@ -403,16 +403,3 @@ capitals 文件：
 	capitals  cc  countries  join  qawk  relfile
 
 最后，我们的 `qawk` 程序还可以进一步优化，例如将创建派生表的语句合并为一条，使得只需要调用一次 `system()` 就能完成；在使用派生表之前先判断派生表是否已经创建，以避免重复创建派生表等等。
-
-
-
-
-
-
-
-
-
-
-
-
- 

@@ -132,12 +132,9 @@ cache 能加快磁盘写入速度，但磁盘一般会对 cache 内缓存数据�
 - 内存方面，设置 vm.swappiness=0
 - IO 方面，使用 deadline 或者 noop 调度策略，使用 noatime，nobarrier 挂载文件系统
 
-</br>
 深入了解 MySQL 在操作系统方面的调优，可以阅读这个 PDF —— [Linux and H/W optimizations for MySQL][pdf]
 
 还有一些能对 MySQL 运行情况进行一些简单判断和分析的脚本，可以阅读这个了解 —— [MySQL Performance Tuning Scripts and Know-How][scripts]
-
-</br>
 
 参考：
 
@@ -146,7 +143,6 @@ cache 能加快磁盘写入速度，但磁盘一般会对 cache 内缓存数据�
 - [Linux performance tuning tips for MySQL](http://www.percona.com/blog/2013/12/07/linux-performance-tuning-tips-mysql/)
 - [4 performance fixes to MySQL on large servers](http://openlife.cc/blogs/2011/may/4-performance-fixes-mysql-large-servers)
 
-</br></br>
 
 [mysql-swap-insanity]: http://blog.jcole.us/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/ "swap insanity"
 [perl]: https://github.com/yoshinorim/unmap_mysql_logs
