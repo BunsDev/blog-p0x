@@ -30,13 +30,7 @@ h6 {
 	line-height: 1.1;
 	font-weight: bold;
 }
-h1{
-	// drop V1.1.1
-	//font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-h4{
-    font-size: 21px;
-}
+
 a {
 	color: @gray-dark;
 	&:hover,
@@ -196,6 +190,12 @@ pre code{
 			}
 		}
 	}
+
+	.anchorjs-link {
+    	// I can not understand this but this made anchor always in the same line as title
+    	position: absolute;
+    	text-decoration: none !important;
+  	}
 }
 
 
