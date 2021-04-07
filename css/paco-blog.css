@@ -1,3 +1,8 @@
+/*!
+ * Paco Blog v1.7.0 (http://liaoph.com)
+ * Copyright 2021 paco <liaoishere@gmail.com>
+ */
+
 @media (min-width: 1200px) {
   .post-container,
   .sidebar-container {
@@ -177,9 +182,6 @@ a:focus {
 a img:hover,
 a img:focus {
   cursor: zoom-in;
-}
-article {
-  overflow-x: hidden;
 }
 blockquote {
   color: #808080;
