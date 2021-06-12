@@ -63,7 +63,7 @@ $$
 n \le log_2x < n+1
 $$
 
-那么要求的结果 $log_2x$ 的整数部分为 n. 那么我们只需要找出 $x$ 的最高位（Most Significant Bit, MSB）的位数，就求出了 $log_2x$ 结果的整数部分。
+即我们要求的对数 $log_2x$ 的整数部分为 n. 那么我们只需要找出 $x$ 的最高位（Most Significant Bit, MSB）的位数，就求出了 $log_2x$ 结果的整数部分。
 
 ### MSB 计算
 
