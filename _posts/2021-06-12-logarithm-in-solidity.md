@@ -17,7 +17,7 @@ tags:
 
 在进行 solidity 开发时，某些场景可能需要进行对数的计算。对数计算虽然在通用编程领域已经有成熟的解决方案（几乎所有编程语言都有相关的内置库或者第三方库来实现）。但是在 solidity 中没有 floating/fixed point number（fixed point number 在 solidity 0.8 版本中仍处于 not fully supported 阶段）的支持，又缺乏这类计算的标准实现。因此在项目的开发中，可能会根据各自的需求，完成不同的实现。
 
-本文尝试解释对数计算的步骤，并以实际项目代码为例进行解析。
+本文尝试解释对数计算的步骤，并以实际项目代码（ABDK Library 和 Uniswap v3）为例进行解析。
 
 # 计算步骤
 
