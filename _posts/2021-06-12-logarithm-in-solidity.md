@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Solidity 的对数计算
+title:      Solidity 中的对数计算
 subtitle:
 date:       2021-06-12 13:47:00
 author:     Paco
