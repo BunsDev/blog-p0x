@@ -42,7 +42,7 @@ $$
 在进行对数计算时，我们可以先利用换底公式，将计算转换为 $log_2x$ 的计算：
 
 $$
-log_bx = \frac{log_2x}{log_2b} = log_2x \cdot log_2b
+log_bx = \frac{log_2x}{log_2b} = log_2x \cdot log_b2
 $$
 
 这样做的原因是，可以将任意数为底的计算转换为以 2 为底的计算，在计算机中对 2 进制的位操作可以方便的进行 $log_2x$ 的计算。
