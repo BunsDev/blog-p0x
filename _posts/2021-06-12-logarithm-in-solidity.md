@@ -129,19 +129,28 @@ $$
 因为前面限定了条件 $1 \le x < 2$，那么我们可以把 $log_2x$ 的计算转化成以下形式：
 
 $$
-log_2x = n_0 \times 1 + n_1 \times \frac{1}{2} + n_2 \times \frac{1}{4} + n_3 \times \frac{1}{8} + ...
+\begin{cases}
+log_2x = n_0 \times 1 + n_1 \times \frac{1}{2} + n_2 \times \frac{1}{4} + n_3 \times \frac{1}{8} + ... \\
+n_i \in \{0, 1\}
+\end{cases}
 $$
 
 因为 $log_2x < 1$，这里可以省略掉 $n_0 \times 1$，即：
 
 $$
-log_2x = n_1 \times \frac{1}{2} + n_2 \times \frac{1}{4} + n_3 \times \frac{1}{8} + ...
+\begin{cases}
+log_2x = n_1 \times \frac{1}{2} + n_2 \times \frac{1}{4} + n_3 \times \frac{1}{8} + ... \\
+n_i \in \{0, 1\}
+\end{cases}
 $$
 
 即
 
 $$
-log_2x = \sum_{i=1}^{\infty}{n_i \times \frac{1}{2^i}}
+\begin{cases}
+log_2x = \sum_{i=1}^{\infty}{n_i \times \frac{1}{2^i}} \\
+n_i \in \{0, 1\}
+\end{cases}
 $$
 
 这样我们就把对数的计算转换成为了加法计算，加法计算迭代的次数越多，计算结果的精度就越高。
