@@ -562,9 +562,9 @@ function getTickAtSqrtRatio(uint160 sqrtPriceX96) internal pure returns (int24 t
 
 ```solidity
     assembly {
-        r := shr(127, mul(r, r))        // 先计算 r := r^2，右移 127 位使其成为 Q129.127 定点数，这里的乘法操作会使其整数位溢出，仅 2 位有效位，以方便后续的计算
-        let f := shr(128, r)            // 右移 128 位，那么现在的 LSB 即为上一步操作 整数位为 2 的值，和 ABDK 同理，当其 f 为 1 时 r >= 2
-        log_2 := or(log_2, shl(63, f))  // 如果 r >= 2，进行与操作，这里使用 f 左移 63 位，当 f 为 1 时，这里等价于 log_2 += 1/2
+        r := shr(127, mul(r, r))        // 先计算 r := r^2，然后右移 127 位使其成为 Q129.127 定点数
+        let f := shr(128, r)            // 右移 128 位，那么现在的第 0 位即为上一步操作结果中，整数位第 1 位的值，和 ABDK 同理，当其 f 为 1 时 r >= 2
+        log_2 := or(log_2, shl(63, f))  // 如果 r >= 2，进行与操作（即加法操作），这里使用 f 左移 63 位，当 f 为 1 时，这里等价于 log_2 += 1/2
         r := shr(f, r)                  // 如果 r >= 2，r := r / 2
     }
     assembly {
