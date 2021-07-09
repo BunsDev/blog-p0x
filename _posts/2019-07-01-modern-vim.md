@@ -181,5 +181,5 @@ coc.nvim 还能够安装扩展支持很多额外功能，例如 git 信息显示
 
 # 配置参考
 
-由于篇幅限制，这里只列出一些我常用的一些插件，我所有的 vim 配置文件都在 github 上可以查看，完整的插件和配置可以参考：[https://github.com/liaoishere/dotfiles/tree/master/vim](https://github.com/liaoishere/dotfiles/tree/master/vim)
+由于篇幅限制，这里只列出一些我常用的一些插件，我所有的 vim 配置文件都在 github 上可以查看，完整的插件和配置可以参考：[https://github.com/paco0x/dotfiles/tree/master/vim](https://github.com/paco0x/dotfiles/tree/master/vim)
 
