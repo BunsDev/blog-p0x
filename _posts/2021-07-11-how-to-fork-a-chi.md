@@ -35,7 +35,7 @@ gas token 一般在以下场景使用：
 
 1. 使用 high gas price 来抢先打包交易。这种场景使用 gas token 可以减少总体的 gas 消耗，矿工一般不会实际模拟这些交易，而是直接按 gas price 来打包
 2. 使用 flashbots 时，降低 gas 的占用。这种场景使用 gas token 可以让那个自己的交易 gas 消耗更少，虽然 miner bribe 不会变少，但是会给矿工打包区块节省 gas（区块的 gas 是有上限的），因此能增加 bundle 的竞争力
-3. 在 gas 很高的时候，用 gas token 降低开销。这种场景需要调用合约支持 gas token 的使用
+3. 在 gas 很高的时候，用 gas token 降低开销。这种场景需要调用的合约支持使用 gas token
 4. 因为 gastoken 是有价值的（可以交易），矿工在需要出空块的时候（为了快速打包区块他们有时候会出空块），可以选择全部 mint gastoken，参考[这篇文章](https://compassmining.io/education/empty-blocks-gas-chi-tokens-ether-pools-mining/)
 
 # CHI gastoken
@@ -88,17 +88,16 @@ function mint(uint256 value) public {
 mstore(0, 0x746d4946c0e9F43F4Dee607b0eF1fA1c3318585733ff6000526015600bf30000)
 ```
 
-这里将一个 32byte 的字节载入到了内存中的 0地址上。这一段 32byte 的字节就是编译好之后的 `initcode`，实际上它之后 30byte，最后的 `0000` 仅为了填充所使用。那么内存中 0～30 byte 的内容就是我们创建合约的 `initcode` 了。在创建合约时，会在新合约的地址空间上直接运行 `initcode`，`initcode` 通常会返回一串字节流，这串字节流就是这个地址上合约的 `bytecode`，它会被永久保存在链上，后续所有对新合约的调用都会运行这段 `bytecode`.
-
-
-### `initcode`
+这里将一个 32byte 的字节载入到了内存中的 0 地址上。这一段 32byte 的字节就是编译好之后的 `initcode`，实际上它之后 30byte，最后的 `0000` 仅为了填充所使用。那么内存中 0 ～ 30 byte 的内容就是我们创建合约的 `initcode` 了。在创建合约时，会在新合约的地址空间上直接运行 `initcode`，`initcode` 通常会返回一串字节流，这串字节流就是这个地址上合约的 `bytecode`，它会被永久保存在链上，后续所有对新合约的调用都会运行这段 `bytecode`.
 
 简单来说：
 
-- `initcode`，有时也被称作 `runtime code`，就是创建新合约时运行的代码，它只会运行一次，在 solidity 中通常被用来运行 `constructor` 函数的代码
-- `bytecode` 是调用已创建合约时运行的代码，它会永久保存在链上（除非调用 `SELFDESTRUCT` 销毁合约）
+-   `initcode`，有时也被称作 `runtime code`，就是创建新合约时运行的代码，它只会运行一次，在 solidity 中通常被用来运行 `constructor` 函数的代码
+-   `bytecode` 是调用已创建合约时运行的代码，它会永久保存在链上（除非调用 `SELFDESTRUCT` 销毁合约）
 
-那么这段 `initcode` 又做了什么了，我们将它解码成 evm 指令来看一下（这里用的 [Online Solidity Decompiler](https://ethervm.io/decompile) 这个工具）：
+### `initcode`
+
+那么这段 `initcode` 又做了什么呢？我们将它解码成 evm 指令来看一下（这里用的 [Online Solidity Decompiler](https://ethervm.io/decompile) 这个工具）：
 
 ```solidity
 0000    74  PUSH21 0x6d4946c0e9f43f4dee607b0ef1fa1c3318585733ff
@@ -109,13 +108,14 @@ mstore(0, 0x746d4946c0e9F43F4Dee607b0eF1fA1c3318585733ff6000526015600bf30000)
 001D    F3  *RETURN
 ```
 
-这里第一列表示指令的偏移量，第二列表示指令的 opcode 码，最后表示指令的内容。这一段 `initcode` 其实只做了一件事，就是把 `6d4946c0e9f43f4dee607b0ef1fa1c3318585733ff` 这段代码加载到内存中，然后调用 `RETURN` 将这段代码返回。这段代码就会作为这个合约的 `bytecode` 被保存在链上了。
+这里第一列表示指令的偏移量，第二列表示指令的 opcode 码，最后表示指令的内容。这一段 `initcode` 其实只做了一件事，就是把 `6d4946c0e9f43f4dee607b0ef1fa1c3318585733ff` 这段字节加载到内存中，然后调用 `RETURN` 将这段字节返回。这段字节码就会作为新创建合约的 `bytecode` 被保存在链上了。
 
 我们可以详细分析运行过程中 EVM 堆栈的情况：
 
 首先，执行 `PUSH21` 和 `PUSH1`，此时栈空间内容为：
 
 ```solidity
+[STACK]
 0: 0x0000000000000000000000000000000000000000000000000000000000000000
 1: 0x00000000000000000000006d4946c0e9f43f4dee607b0ef1fa1c3318585733ff
 ```
@@ -123,10 +123,11 @@ mstore(0, 0x746d4946c0e9F43F4Dee607b0eF1fA1c3318585733ff6000526015600bf30000)
 然后执行 `MSTORE`，它会将栈 1 中的字节流存储到栈 0 中指定的内存地址中，执行完成后栈空间就被清空了，而内存空间为：
 
 ```solidity
+[MEMORY]
 0x0: 0x00000000000000000000006d4946c0e9f43f4dee607b0ef1fa1c3318585733ff
 ```
 
-最后我们要将内存中内存地址 `[11, 32)` 的代码返回，从内存地址 11 开始，是因为需要跳过首部 11 个 byte 的 `0`. 因此最后几行指令可以翻译成 Yul 代码 `return(11, 21)`，即将内存中 `[11, 32)` 中的值返回，这里就是创建合约的 `bytecode` 了，也就是 `mint` 操作创建的新合约的 `bytecode`，之后这段 `initcode` 就运行结束了，它所返回的 `bytecode` 将被存储到合约地址中。
+最后我们要将内存中内存地址 `[11, 32)` 的代码返回，从内存地址 11 开始，是因为需要跳过首部 11 个 byte 的 `0`. 因此最后几行指令可以翻译成 Yul 代码 `return(11, 21)`，即将内存中 `[11, 32)` 中的值返回，这里返回的就是创建合约的 `bytecode` ，也就是 `mint` 操作创建的新合约的 `bytecode`。之后这段 `initcode` 运行结束，它所返回的 `bytecode` 被存储到合约地址中。
 
 ### `bytecode`
 
@@ -147,7 +148,9 @@ mstore(0, 0x746d4946c0e9F43F4Dee607b0eF1fA1c3318585733ff6000526015600bf30000)
 1. 使用 `XOR` 将 caller 地址与 `0x000000000000004946c0e9f43f4dee607b0ef1fa1c` 进行比较
 2. 将 Program Counter 记录到栈上
 3. 如果 `XOR` 结果不为 0，那么会使用 `JUMPI` 进行跳转，但是因为没有合法的 `JUMPDEST`，这个指令会直接 `revert`，并且消耗光所有的剩余 gas
-3. 如果`XOR` 结果为 0，那么代码回不进行跳回，而会继续执行到 `SELFDESTRUCT` 指令，合约将被销毁
+4. 如果`XOR` 结果为 0，那么代码回不进行跳回，而会继续执行到 `SELFDESTRUCT` 指令，合约将被销毁
+
+因为这是一段手工编写的 opcode，它并没有 solidity 编译后的 opcodes 那么复杂，这样也节省了很多的运行开销。
 
 这里的 `0x000000000000004946c0e9f43f4dee607b0ef1fa1c` 就是 [CHI Gastoken](https://etherscan.io/address/0x0000000000004946c0e9F43F4Dee607b0eF1fA1c#contracts) 的地址。因此在写 CHI 代码时需要先计算出将要部署的合约的地址，然后将其填充到这段 `bytecode` 中。这里 1inch 计算出了一个以 `0x000000000000...` 起始的地址，这样可以让 `bytecode` 更加的精简，可以说是将优化进行到了极致。
 
@@ -180,7 +183,9 @@ function free(uint256 value) public returns (uint256)  {
 }
 ```
 
-首先调用 `_burn(msg.sender, value)` 将用户的 ERC20 token 销毁，然后调用 `_destroyChildren()` 来销毁子合约。销毁子合约时，先用 `computeAddress2` 计算出子合约的地址，在计算时，我们需要使用 `salt` 以及 `initcode` hash，这里的 `0x3c1644c68e5d6cb380c36d1bf847fdbc0c7ac28030025a2fc5e63cce23c16348` 就是 `initcode` hash，即：
+调用 `free(uint256 value)` 就可以进行 gas token 的销毁。
+
+函数内会首先调用 `_burn(msg.sender, value)` 将用户的 ERC20 token 销毁，然后调用 `_destroyChildren()` 来销毁子合约。销毁子合约时，先用 `computeAddress2` 计算出子合约的地址，在计算时，我们需要使用 `salt` 以及 `initcode` hash，这里的 `0x3c1644c68e5d6cb380c36d1bf847fdbc0c7ac28030025a2fc5e63cce23c16348` 就是 `initcode` hash，即：
 
 ```javascript
 > utils.keccak256('0x746d4946c0e9F43F4Dee607b0eF1fA1c3318585733ff6000526015600bf3')
@@ -218,7 +223,7 @@ computeAddress2(_totalBurned + i).call("");
 以太坊中合约一共有两种创建方式，第一种是使用 `CREATE` 指令，第二种是使用 `CREATE2` 指令。第二种方式在之前已经讲过，它只能在合约中使用。我们正常部署一个合约都是使用的第一种创建方式，这种方式创建的合约地址计算方式为：
 
 ```javascript
-'0x' + utils.keccak256(rlp.encode([SENDER, NONCE])).slice(26)
+"0x" + utils.keccak256(rlp.encode([SENDER, NONCE])).slice(26);
 ```
 
 即将 `sender` 地址和 `nonce` 使用 rlp 编码后进行 `keccak256` 计算，并取计算结果末尾的 20 个字节作为合约地址。那么我们在部署合约之前，将部署账号的地址和 next nonce 作为参数，就可以计算出即将部署的合约地址了。
@@ -242,7 +247,7 @@ computeAddress2(_totalBurned + i).call("");
 
 上面我用括号括起来的就是需要替换的地址。
 
-参看这份 [EVM opcodes](https://github.com/crytic/evm-opcodes) 表，在这个地址前的指令是 `6d` 即 `PUSH14`. 因为 CHI 的地址前面有很多个 0（一共有 6 个 byte 的0），而我生成的地址是一个非 0 开头的 20byte 地址，因此这个 `6d` 指令也需要改写成为 `73` 即 `PUSH20`.
+参看这份 [EVM opcodes](https://github.com/crytic/evm-opcodes) 表，在这个地址前的指令是 `6d` 即 `PUSH14`. 因为 CHI 的地址前面有很多个 0（一共有 6 个 byte 的 0），而我生成的地址是一个非 0 开头的 20byte 地址，因此这个 `6d` 指令也需要改写成为 `73` 即 `PUSH20`.
 
 改写完成后，代码成了这样：
 
@@ -252,7 +257,7 @@ computeAddress2(_totalBurned + i).call("");
 
 为了方便比较，这里我还是将改动过的内容用括号括起来。
 
-到这里还不够，来看第一个指令码 `74`，表示的是 `PUSH21`，即将原来长度为 21 字节的 `bytecode` push 到栈上。但是经过改写后，现在的 `bytecode` 长度增加了 6 个字节（因为新地址不是以 0 开头的了）。这里我们需要将原来的  `PUSH21` 改成 `PUSH27` 即 `7a`，改动后 `initcode` 为：
+到这里还不够，来看第一个指令码 `74`，表示的是 `PUSH21`，即将原来长度为 21 字节的 `bytecode` push 到栈上。但是经过改写后，现在的 `bytecode` 长度增加了 6 个字节（因为新地址不是以 0 开头的了）。这里我们需要将原来的 `PUSH21` 改成 `PUSH27` 即 `7a`，改动后 `initcode` 为：
 
 ```
 (7a73d9145cce52d386f254917e481eb44e9943f39138)3318585733ff6000526015600bf30000
@@ -261,12 +266,14 @@ computeAddress2(_totalBurned + i).call("");
 改动后，在 `initcode` 运行时，我们就能正确将 `bytecode` push 到栈上了，但是我们还需要将这段 `bytecode` 正确从内存中返回。在之前 [initcode](#initcode) 的讲解中，我们知道 `initcode` 会使用 `MSTORE` 将栈上的这段 `bytecode` 保存到内存中，然后返回内存中对应的字节。在原始 `initcode` 运行时，新合约地址空间中 EVM 的内存布局为：
 
 ```
+[MEMORY]
 0x0: 0x00000000000000000000006d4946c0e9f43f4dee607b0ef1fa1c3318585733ff
 ```
 
 现在我们进行了修改之后，这段 `initcode` 运行后 EVM 内存布局将为：
 
 ```
+[MEMORY]
 0x0 0x0000000000073d9145cce52d386f254917e481eb44e9943f391383318585733ff
 ```
 
@@ -346,5 +353,3 @@ function computeAddress2(uint256 salt) public view returns (address) {
 到这里，fork CHI token 的所有流程就完成了，如果还有其他修改需求，就可以在这个修改后的合约之上来进行修改了。
 
 Happy hacking!
-
-
