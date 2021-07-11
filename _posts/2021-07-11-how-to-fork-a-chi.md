@@ -36,6 +36,7 @@ gas token 一般在以下场景使用：
 1. 使用 high gas price 来抢先打包交易。这种场景使用 gas token 可以减少总体的 gas 消耗，矿工一般不会实际模拟这些交易，而是直接按 gas price 来打包
 2. 使用 flashbots 时，降低 gas 的占用。这种场景使用 gas token 可以让那个自己的交易 gas 消耗更少，虽然 miner bribe 不会变少，但是会给矿工打包区块节省 gas（区块的 gas 是有上限的），因此能增加 bundle 的竞争力
 3. 在 gas 很高的时候，用 gas token 降低开销。这种场景需要调用合约支持 gas token 的使用
+4. 因为 gastoken 是有价值的（可以交易），矿工在需要出空块的时候（为了快速打包区块他们有时候会出空块），可以选择全部 mint gastoken，参考[这篇文章](https://compassmining.io/education/empty-blocks-gas-chi-tokens-ether-pools-mining/)
 
 # CHI gastoken
 
