@@ -21,7 +21,7 @@ Fork CHI gastoken 的想法来自于和一位网友的对话。这位网友打�
 
 以太坊上所有的智能合约，都是编译成 EVM 指令来运行的，在运行的过程中，根据指令的开销不同，会向用户收取不同数量的 gas，调用合约所运行的指令需要花费的 gas 总和就是交易所需要的 gas 总和。gastoken 就是一种可以用来降低交易 gas 开销的特殊 token，它利用了以太坊在早期设计的一个 gas 折扣规则来实现降低 gas 开销。
 
-我们知道合约中的数据，都是永久保存在链上的，随着区块链运行的时间越久，链上所保存的数据也就越多，但是这些数据很多可能都是无效的数据。在以太坊设计时，为了鼓励开发者将没用的数据和合约清理掉，如果在交易中对合约进行销毁（`SELFDESTRUCT`）或者将合约存储 slots 中的数据清空（`SSTORE[x] = 0`），都可以获得 gas 折扣，即在原先要消耗的 gas 基础上打一个折扣，这样交易的 gas 开销就变小了。
+我们知道合约中的数据，都是永久保存在链上的，随着区块链运行的时间越久，链上所保存的数据也就越多，但是这些数据很多可能都是无效的数据。在以太坊设计时，为了鼓励开发者将没用的数据和合约清理掉，如果在交易中对合约进行销毁（`SELFDESTRUCT`）或者将合约存储 slots 中的数据清空（`SSTORE[x] = 0`），都可以获得 gas 折扣，即在原先要消耗的 gas 基础上打一个折扣，这样交易的 gas 开销就变小了。（具体的 gas refund 实现可以参考：[core/vm/gas_table.go](https://github.com/ethereum/go-ethereum/blob/94451c2788295901c302c9bf5fa2f7b021c924e2/core/vm/gas_table.go#L420-L441)）
 
 于是就有开发者利用这个规则，开发出了各种 gastoken. 他们的原理大同小异，都是允许用户在 gas price 比较低的时候 `mint` gastoken，然后在 gas price 较高时将 gastoken `burn` 掉，这样就可以在高 gas price 时节省 gas 开销。
 
@@ -208,7 +208,7 @@ computeAddress2(_totalBurned + i).call("");
 
 ![burn-error](../img/in-post/how-to-fork-a-chi/burn-error.png)
 
-错误提示是 `Bad jump destination`，即之前在 [bytecode](#bytecode) 中所讲的，`CALLER` 地址将与 `0x000000000000004946c0e9f43f4dee607b0ef1fa1c` 这个硬编码地址进行 `XOR` 比较，因为我 fork 后部署的 CHI 合约地址并不是这个地址，会导致比较的结果不为 0，然后会执行 `JUMPI`，进行了一个无效的跳转，导致 revert 并消耗完所有剩余 gas.
+错误提示是 `Bad jump destination`，即之前在 [bytecode](#bytecode) 中所讲的，`CALLER` 地址将与 `0x000000000000004946c0e9f43f4dee607b0ef1fa1c` 这个硬编码地址进行 `XOR` 比较，因为我 fork 后部署的 CHI 合约地址并不是这个地址，会导致比较的结果不为 0，然后会执行 `JUMPI`，进行了一个无效的跳转。EVM 在执行指令时，如果发生这种错误会将链上状态 revert 并直接消耗完所有剩余 gas（具体实现参考：[core/vm/evm.go](https://github.com/ethereum/go-ethereum/blob/94451c2788295901c302c9bf5fa2f7b021c924e2/core/vm/evm.go#L263-L274)）。
 
 ## Tackle the bytecode
 
