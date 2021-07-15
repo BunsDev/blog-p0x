@@ -27,7 +27,7 @@ Fork CHI gastoken 的想法来自于和一位网友的对话。这位网友打�
 
 那么 gastoken 的 `mint` 和 `burn` 背后又会执行什么操作呢？对于 `mint` 操作，一般来说，合约会创建一些新的合约，或者向 slots 中写入一些无效的数据。反之，在 `burn` 操作时，又会将之前创建的合约销毁掉，或者将存储空间中的数据清零。
 
-gastoken 实际上是滥用了以太坊的 refund 机制，因此以太坊在未来也将移除掉这个 refund 机制，gastoken 将不再有效，具体可以参考：[EIP-3298: Removal of refunds](https://eips.ethereum.org/EIPS/eip-3298)
+gastoken 实际上是滥用了以太坊的 refund 机制，因此以太坊在未来也将消弱这个 refund，使其不再能够被用于 gas token. 具体可以参考：[EIP-3529: Reduction in refunds](https://eips.ethereum.org/EIPS/eip-3529)，此 EIP 将在以太坊[伦敦分叉](https://blog.ethereum.org/2021/07/15/london-mainnet-announcement/)后实行。
 
 # Why use gastoken
 
