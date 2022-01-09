@@ -16,7 +16,7 @@ tags:
 
 ## 资金效率和安全性之间的矛盾
 
-以 COMP 和 AAVE 为首的借贷市场，都会以 DAO 的形式来管理借贷市场的可用的借贷资产。但是为了安全性，往往只有足够去中心化并且有足够多流动性的 token 可以被加入到借贷市场中。但是用户往往希望借贷平台上有更多的借贷代币。
+以 COMP 和 AAVE 为首的借贷市场，都会以 DAO 的形式来管理借贷市场的可用的借贷资产。为了安全性，往往只有足够去中心化并且有足够多流动性的 token 可以被加入到借贷市场中，但是用户往往又希望借贷平台上有更多的借贷代币。
 
 由于 COMP/AAVE 中的借贷都是共享借贷池的，随着借贷市场中代币的增多，系统的安全性也会必然随之降低，即所谓木桶效应， 系统安全性取决于安全性最低的那个 token。
 
@@ -26,7 +26,7 @@ tags:
 
 ## 安全性
 
-以 COMP/AAVE 为首的借贷市场，由于使用了共享的资金池，整个借贷市场的安全性取决于安全性最弱的那个代币市场（木桶效应）。如果这个市场出现漏洞被攻击，那么其他市场也会遭受损失，这里有一些攻击案例（发生在 COMP/AAVE fork 项目中）：
+以 COMP/AAVE 为首的借贷市场，由于使用了共享的资金池，整个借贷市场的安全性取决于安全性最弱的那个代币市场（木桶效应）。如果这个市场出现漏洞被攻击，那么其他市场也会遭受损失，这里有一些攻击案例，发生在 COMP/AAVE fork 项目中：
 
 - BSC Venus 借贷平台中的 XVS（Venus 自己的代币）价格被操控（有消息称是 Venus 团队自己进行的市场操纵），导致整个平台遭受了 2亿美金的损失。（[$200 M Venus Protocol hack analysis](https://quillhashteam.medium.com/200-m-venus-protocol-hack-analysis-b044af76a1ae)）
 - CREAM 遭受闪电贷攻击（攻击代币的 Oracle），导致平台遭受 1.3亿美金损失。（[Cream Finance Exploited in Flash Loan Attack Netting Over $100M](https://www.coindesk.com/business/2021/10/27/cream-finance-exploited-in-flash-loan-attack-worth-over-100m/)）
@@ -37,14 +37,15 @@ tags:
 
 通常的解决方案时将借贷市场进行隔离：
 
-- 以 sushiswap 的 [Kashi](https://app.sushi.com/lend) 为代表，Kashi 中每一个借贷市场是相互隔离的，当一个市场出安全事故时，不会影响到其他市场。因此可以支持创建任意的借贷对。但是这样设定同时造成了流动性的隔离，Kashi 的用户体验也因此受到影响，此产品并的市场反应并不好。
+- 以 sushiswap 的 [Kashi](https://app.sushi.com/lend) 为代表，Kashi 中每一个借贷市场是相互隔离的，当一个市场出安全事故时，不会影响到其他市场。因此可以支持创建任意的借贷对。但是这样设定同时造成了流动性的隔离，每一个市场的流动性是分离的，Kashi 的用户体验也因此受到影响，此产品并的市场反应并不好。
+
 - [Euler](https://www.euler.finance) 是另一个尝试通过多级别隔离来提升安全性的借贷协议，协议通过对代币进行安全性级别划分来进行借贷风险的隔离，关于 Euler 可以参考：[Euler — 次世代的 DeFi 借貸協議](https://medium.com/perp-engineering-zh/euler-intro-e9a9daad7280)
 
 # Silo 借贷协议
 
 [Silo](https://resources.silo.finance/) 使用了全新的机制以实现安全性，无许可，无托管的目标。项目参加了 ETHGlobal2021 Hackathon，并获得 finalist, Chainlink Prize Pool 1st 等奖项（[Silo Finance ETH Global showcase](https://showcase.ethglobal.com/ethonline2021/silo-finance)）。
 
-Silo 将协议中的资产分成两种类型，一种是普通的借贷资产，另一种则被称为 Bridge Asset. Silo 协议由 N 个互相隔离的借贷市场来组成。每一个借贷市场都包含 Bridge Asset 和一个唯一的借贷资产代币。
+Silo 将协议中的资产分成两种类型，一种是普通的借贷资产，另一种则被称为 Bridge Asset。 Silo 协议由 N 个互相隔离的借贷市场来组成。每一个借贷市场都包含 Bridge Asset 和一个唯一的借贷资产代币。
 
 ![silo-market](../img/in-post/silo-finance/Med-SiloOrbV2.png)
 
@@ -74,9 +75,11 @@ Bridge Asset 的作用是将多个市场连接起来，这有点类似于 Uniswa
 
 通过这样的设计，所有互相隔离的市场又通过 Bridge Asset 共享了流动性。解决了隔离性带来的流动性问题。
 
+因为用户借出的 ETH 被存入刀了 B/ETH 池子中，因此被借出的 B Token 是由 ETH 来担保的，它并不需要承担 A Token 所带来的任何风险。
+
 ## 借贷系数
 
-为了保证安全性，Silo 目前设定为任何市场中，用户能借贷价值为抵押品 50% 的借贷资产，当借贷资产比例到达 62.5% 时则会开始进行清算。当然这个系数时可以调整的，对于相对稳定的代币来说，可以设置更宽松的借贷系数会更合适。
+为了保证安全性，Silo 目前设定为任何市场中，用户能借贷价值为抵押品 50% 的借贷资产，当借贷资产比例到达 62.5% 时则会开始进行清算。当然这个系数是可以调整的，对于相对稳定的代币来说，设置更宽松的借贷系数会更合适。
 
 ## 安全性
 
@@ -93,5 +96,11 @@ Bridge Asset 的作用是将多个市场连接起来，这有点类似于 Uniswa
 - 其他所有市场的流动性提供者都不会遭受任何损失，因为所有市场时隔离开的
 
 可以看到 Silo 通过隔离提升了协议整体的安全性，不会出现 CREAM/Venus 中出现事故整个池子被掏空的问题。
+
+# 总结
+
+Silo 通过隔离市场解决了代币过多导致协议整体安全性下降的问题，同时又通过 Bridge Asset 的设定解决了隔离市场流动性分裂的问题。
+
+同时因为这些机制天生就具有足够的安全性，Silo 天然就是一个 permission-less & non-custodial 的借贷市场。期待 Silo 能给 DeFi 借贷市场带来一些新的变化。
 
 关于 Silo 更多的资料可以参考： [Silo Docs](https://resources.silo.finance/)。目前（2022-01-08）项目还在开发阶段，预计会在 2022 Q1 上线主网。
