@@ -14,7 +14,7 @@ tags:
 
 > 这是来自于 [Gustavo Duarte](http://duartes.org/gustavo/blog/) 博客的一系列的计算机内部原理的科普文章，本人出于兴趣翻译过来。原文：[How Computers Boot Up](http://duartes.org/gustavo/blog/post/how-computers-boot-up/)
 
-上一篇文章讲了 Intel 系统的[主板与内存映射](http://liaoph.com/motherboard-and-memory-map/)。计算机启动是一个复杂的，充满黑科技的（原文是 hacky），多阶段的过程。这里是整个过程的概要图：
+上一篇文章讲了 Intel 系统的[主板与内存映射](http://paco0x.org/motherboard-and-memory-map/)。计算机启动是一个复杂的，充满黑科技的（原文是 hacky），多阶段的过程。这里是整个过程的概要图：
 
 ![](/img/in-post/how-computers-boot-up/boot-process.png)
 
@@ -24,7 +24,7 @@ tags:
 
 CPU 中的大多数的[寄存器](http://en.wikipedia.org/wiki/Processor_register) 在启动后会有预定义好的值，包括指令寄存器（instruction pointer, EIP），它保存有 CPU 执行指令的内存地址。Intel CPU 使用了一个黑科技手段，虽然启动时只有 1MB 的内存可以被寻址，一个隐藏的基地址（本质上，是一个偏移量）被放入了 EIP 中，因此第一条指令的内存地址是 0xFFFFFFF0 （4 GB 内存的最后 16 字节，这显然超出了 1MB 的范围）。这个魔法地址被称作[复位向量（reset vector）](http://en.wikipedia.org/wiki/Reset_vector)，它已经是现代 Intel CPU 的一个标准。
 
-主板确保复位向量的指令是跳转（jump）到映射至 BIOS 入口点的内存地址。这个跳转隐藏了启动时的基地址的存在。主板芯片的[内存映射](http://liaoph.com/motherboard-and-memory-map/)使得这些内存位置都有着与 CPU 指令向匹配的映射内容。跳转后的内存地址被映射到了包含有 BIOS 的闪存中，这时候内存中的还是完全无意义的内容。下面是相关的内存区域示例图：
+主板确保复位向量的指令是跳转（jump）到映射至 BIOS 入口点的内存地址。这个跳转隐藏了启动时的基地址的存在。主板芯片的[内存映射](http://paco0x.org/motherboard-and-memory-map/)使得这些内存位置都有着与 CPU 指令向匹配的映射内容。跳转后的内存地址被映射到了包含有 BIOS 的闪存中，这时候内存中的还是完全无意义的内容。下面是相关的内存区域示例图：
 
 ![](/img/in-post/how-computers-boot-up/memory-map.png)
 

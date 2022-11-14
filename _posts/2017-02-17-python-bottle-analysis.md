@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      Python bottle 源码解析
-subtitle:   
+subtitle:
 date:       2017-02-17 19:00:00
 author:     Paco
 catalog:    true
@@ -43,7 +43,7 @@ run(host='localhost', port=8080)
 * 模板，动态生成 HTML 响应
 * 运行，提供 WSGI Server 运行 Web 服务器
 
-我们首先从运行说起，要了解它是如何运行一个 Web 服务器的，首先需要知道 Python WSGI 的概念，可以参考我的上一篇文章：[Python WSGI 初探](http://liaoph.com/python-wsgi/)。
+我们首先从运行说起，要了解它是如何运行一个 Web 服务器的，首先需要知道 Python WSGI 的概念，可以参考我的上一篇文章：[Python WSGI 初探](http://paco0x.org/python-wsgi/)。
 
 为了运行一个 Web 服务器，首先需要一个 WSGI 服务器，Python 的自带库 `wsgiref` 就能提供 WSGI 服务器。其次，需要有一个 application 对象，WSGI 服务器收到请求后会调用这个 application 对象来完成处理。
 
@@ -235,7 +235,7 @@ class BaseRequest(object):
         #: All other attributes actually are read-only properties.
         self.environ = {} if environ is None else environ
         self.environ['bottle.request'] = self
-        
+
     def __getitem__(self, key):
         return self.environ[key]
 
@@ -248,7 +248,7 @@ class BaseRequest(object):
 
     def __len__(self):
         return len(self.environ)
-        
+
     def __setitem__(self, key, value):
         """ Change an environ value and clear all caches that depend on it. """
 
@@ -361,7 +361,7 @@ class DictProperty(object):
 class LocalRequest(BaseRequest):
     bind = BaseRequest.__init__    # 这个方法用于对 request 对象进行初始化
     environ = _local_property()
-``` 
+```
 
 这个类直接继承于 `BaseRequest`，新增了一个 `bind()` 方法用于初始化，同时使用 `_local_property()` 函数设置了线程的私有属性。`_local_property()` 函数内部维护线程私有的数据（这样确保 `request` 全局变量是线程安全的），它返回一个 `property` 对象，这个对象有相应的 `getter`, `setter` 和 `deleter` 方法：
 
@@ -554,7 +554,7 @@ route = Route(self, rule, verb, callback,
               lugins=plugins,
               skiplist=skiplist, **config)
 self.add_route(route)
-``` 
+```
 
 通过 `add_route` 方法，代码中所有被装饰器修饰的函数在运行时都被注册到了 application 对象中，具体来说是 `Bottle.routes` 和 `Bottle.router` 中。
 
