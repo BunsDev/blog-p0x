@@ -43,7 +43,7 @@ run(host='localhost', port=8080)
 * 模板，动态生成 HTML 响应
 * 运行，提供 WSGI Server 运行 Web 服务器
 
-我们首先从运行说起，要了解它是如何运行一个 Web 服务器的，首先需要知道 Python WSGI 的概念，可以参考我的上一篇文章：[Python WSGI 初探](http://blog.paco0x.org/python-wsgi/)。
+我们首先从运行说起，要了解它是如何运行一个 Web 服务器的，首先需要知道 Python WSGI 的概念，可以参考我的上一篇文章：[Python WSGI 初探](http://paco0x.org/python-wsgi/)。
 
 为了运行一个 Web 服务器，首先需要一个 WSGI 服务器，Python 的自带库 `wsgiref` 就能提供 WSGI 服务器。其次，需要有一个 application 对象，WSGI 服务器收到请求后会调用这个 application 对象来完成处理。
 

@@ -148,7 +148,7 @@ cache 能加快磁盘写入速度，但磁盘一般会对 cache 内缓存数据�
 [perl]: https://github.com/yoshinorim/unmap_mysql_logs
 [pdf]: http://en.oreilly.com/mysql2011/public/schedule/detail/17111
 [scripts]: http://www.askapache.com/mysql/performance-tuning-mysql.html
-[IO]: http://blog.paco0x.org/linux-system-io/#io
+[IO]: http://paco0x.org/linux-system-io/#io
 
 
 

@@ -1,5 +1,5 @@
 /*!
- * Paco Blog v1.7.0 (http://blog.paco0x.org)
+ * Paco Blog v1.7.0 (http://paco0x.org)
  * Copyright 2021 paco <liaoishere@gmail.com>
  */
 

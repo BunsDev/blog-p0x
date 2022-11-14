@@ -1,1 +1,1 @@
-Blog: blog.paco0x.org
+Blog: paco0x.org
