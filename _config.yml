@@ -45,9 +45,6 @@ kramdown:
 disqus_username: liaoph                  # set to false if you want to use Comment without Sharing
 
 # Analytics settings
-# Baidu Analytics
-# ba_track_id: ca24cc0fb86c19c1a88f5f7a020629d3
-# Google Analytics
 ga_track_id: 'G-97JGLVEY5F'
 
 # Sidebar settings
