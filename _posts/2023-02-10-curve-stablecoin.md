@@ -12,7 +12,7 @@ tags:
     - Ethereum
 ---
 
-Curve Stablecoin 是 Curve 团队设计的新一代稳定币协议，相较于传统的稳定币协议或借贷协议如 makerDAO, liquity, compound 等，Curve Stablecoin 主要的改进在于使用自带 AMM，更高效的解决了清算问题，从而很大程度降低了协议产生坏账的风险，同时这个 AMM 也能在清算时帮助消化被清算的资产，从而降低大量资产卖出对市场带来的波动性。
+Curve Stablecoin 是 Curve 团队设计的新一代稳定币协议，相较于传统的稳定币协议或借贷协议如 makerDAO, Liquity, Compound 等，Curve Stablecoin 主要的改进在于使用自带 AMM，更高效的解决了清算问题，从而很大程度降低了协议产生坏账的风险，同时这个 AMM 也能在清算时帮助消化被清算的资产，从而降低大量资产卖出对市场带来的波动性。
 
 Curve 官方还没有公布这个稳定币的代币名称，后文会使用 crvUSD 来指代。
 
