@@ -242,6 +242,8 @@ p(x = 0, y > 0, n) = p_{cd}(n) = p_{cu}(n - 1) \\
 p(x > 0, y = 0, n) = p_{cu}(n) = p_{cd}(n + 1)
 $$
 
+同时，还可以发现，在外部价格范围中，价格越低的 band （左边）中的 $p_{cu}$ 和 $p_{cd}$ 反而高于价格更高（右边）band 中的 $p_{cu}$ 和 $p_{cd}$.
+
 ### 清算/赎回结果估算
 
 在实际合约中，用户的资金会存入一组连续的 band 中（至少为 5 个），那么最大 band 的 $p_↑$ 则是用户资产的清算起始价格，最小 band 的 $p_↓$ 是用户资产的清算结束价格，到达此价格后，用户的 ETH 将被全部转换成 crvUSD.
@@ -369,6 +371,12 @@ $$
 ![target-ratio-rate](../img/in-post/curve-stablecoin/target-ratio-rate.gif)
 
 当 PegKeeper 债务占比比较大时，则将曲线整体左移。原因是，如果 PegKeeper 债务占比很大，crvUSD 价格小于 1时，可以先让 PegKeeper 从 Curve V1 池子中移除 crvUSD 单币来减少其债务，而不要着急升高利率，升高利率会作为最后一个策略来减少 crvUSD 的供给。
+
+## Oracle
+
+由前所述，Curve Stablecoin 在 LLAMMA 中需要知道抵押品 ETH 的外部价格，在 PegKeeper 和 Monetary Policy 中需要知道 crvUSD 的外部价格。对于抵押品价格，Curve 会从 Curve V2 池中抓取，crvUSD 价格则会从对应 Curve V1 池中抓取（参考多个池子中的价格）。
+
+为了避免 Oracle 价格操作，Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处理。
 
 # FAQs
 
