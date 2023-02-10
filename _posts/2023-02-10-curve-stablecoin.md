@@ -404,6 +404,13 @@ A：LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概�
 
 如果有其他问题，欢迎在评论区留言讨论。
 
+Ref:
+
+- [Curve stablecoin whitepaper](https://github.com/curvefi/curve-stablecoin/blob/master/doc/curve-stablecoin.pdf)
+- [From Uniswap v3 to crvUSD LLAMMA](https://www.curve.wiki/post/from-uniswap-v3-to-crvusd-llamma-%E8%8B%B1%E6%96%87%E7%89%88)
+
+另感谢 [@0xstan](https://twitter.com/0xstan_) 和 [@0xmc](https://twitter.com/0xMC_com) 在学习过程中的交流和讨论。
+
 
 
 
