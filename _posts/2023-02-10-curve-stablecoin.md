@@ -2,7 +2,7 @@
 layout: post
 title: Curve Stablecoin 非权威解读
 subtitle:
-date: 2022-08-27 02:00:00
+date: 2023-02-10 09:00:00
 author: Paco
 catalog: true
 header-img: img/in-post/curve-stablecoin/bg.jpg
