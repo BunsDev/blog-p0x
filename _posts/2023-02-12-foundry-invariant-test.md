@@ -446,13 +446,15 @@ modifier useActor(uint256 actorIndexSeed) {
 
 不过 Foundry 目前并不支持输出测试过程中调用的所有函数记录，我们只能使用 `console.log2` 来记录。
 
-### Production cases
+### 更多资料
+
+- [lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)，Invariant Test 最佳实践的完整示例参考
+- [How to Foundry with Brock Elmore](https://www.youtube.com/watch?v=Rp_V7bYiTCM)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
 
 想要学习其他项目在生产环境中使用 Invariant Test 的经验，可以参考这些仓库：
 
 - [maple-labs/maple-core-v2](https://github.com/maple-labs/maple-core-v2/tree/main/tests/invariants)，maple finance 大量使用了 handler 模式的 Invariant Test，并且对在测试中发现 bug 使用[回归测试](https://github.com/maple-labs/maple-core-v2/blob/00f01ae7175885f8d49ac201a1c72465e320b2f6/tests/e2e/Regression.t.sol#L53)的方式来确保修复
 - [optimism](https://github.com/ethereum-optimism/optimism/tree/develop/packages/contracts-bedrock/contracts/test/invariants)，Optimism 中的 Invariant Test，使用了 Handler + Actor 结合的模式
-- [How to Foundry with Brock Elmore](https://www.youtube.com/watch?v=Rp_V7bYiTCM)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
 
 ### Open Issues
 
