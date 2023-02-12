@@ -456,7 +456,7 @@ modifier useActor(uint256 actorIndexSeed) {
 
 ### Open Issues
 
-Foundry 的 Invariant Test 还并不足够强大和完善，如果你想对它进行改进，不妨看看以下相关 issue：
+Foundry 的 Invariant Test 还在持续的开发和改进中，如果你想对项目进行贡献，不妨看看以下相关 issue：
 
 - [https://github.com/foundry-rs/foundry/issues/3005](https://github.com/foundry-rs/foundry/issues/3005)
 - [https://github.com/foundry-rs/foundry/issues/2963](https://github.com/foundry-rs/foundry/issues/2963)
