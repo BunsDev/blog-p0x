@@ -148,9 +148,9 @@ Test result: ok. 2 passed; 0 failed; finished in 6.33ms
 
 这里的字典指的是 Foundry 在测试环境中收集到的一些值，例如 `PUSH` 操作对象，合约 bytecode 中的常数，合约 storage 中的值等等。通过使用字典中的值测试，更容易提高 Fuzz test 的测试覆盖率。
 
-Fuzz test 的这些策略都可以通过配置来调整，具体可以参考 [Config Reference - Testing](https://book.getfoundry.sh/reference/config/testing#fuzz)。
+Fuzz Test 的这些策略都可以通过配置来调整，具体可以参考 [Config Reference - Testing](https://book.getfoundry.sh/reference/config/testing#fuzz)。
 
-可以使用 `vm.assume()` 或者 `forge-std` 中的 `bound()` 来过滤一些不想要的参数。
+在 Fuzz Test 中可以使用 `vm.assume()` 或者 `forge-std` 中的 `bound()` 来过滤一些不想要的参数。
 
 如果是对单个值的过滤推荐使用 `vm.assume()`，而如果想进行范围过滤，则更推荐使用 `bound()`，因为在使用 `vm.assume()` 时如果范围太小，可能导致 fuzz 时 reject 过多而失败（默认配置最多允许 65536 次 reject）。
 
