@@ -2,13 +2,14 @@
 layout: post
 title: Foundry Invariant Test 初探
 subtitle:
-date: 2023-02-12 18:00:00
+date: 2023-02-12 10:00:00
 author: Paco
 catalog: true
 header-img: img/in-post/foundry-invariant-test/bg.png
 permalink: /foundry-invariant-test/
 tags:
     - Ethereum
+    - Solidity
 ---
 
 Foundry 的文档终于更新了长期以来鲜为人知的 Invariant Test 功能。这个功能在过去几个月中一直在 Foundry 中是一个未被完全文档化的神秘功能，只在少数项目中得到了使用。但是，使用好 Invariant Test 可以显著提高合约的可靠性，可以预见到，在不久的将来，Invariant Test 将成为一名合约开发的必备技能之一。
