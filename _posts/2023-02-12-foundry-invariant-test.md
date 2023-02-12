@@ -440,12 +440,31 @@ modifier useActor(uint256 actorIndexSeed) {
 
 更多关于 Invariant Test 使用的最佳实践演示，可以参考这个仓库：[lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)。
 
+### Regression Test
+
+如果使用 Invariant Test 发现了系统中的 bug，我们最好将出现 bug 时系统中的状态记录下来，这样可以在修复 bug 之后还原此状态进行回归测试。
+
+不过 Foundry 目前并不支持输出测试过程中调用的所有函数记录，我们只能使用 `console.log2` 来记录。
+
 ### Production cases
 
 想要学习其他项目在生产环境中使用 Invariant Test 的经验，可以参考这些仓库：
 
 - [maple-labs/maple-core-v2](https://github.com/maple-labs/maple-core-v2/tree/main/tests/invariants)，maple finance 大量使用了 handler 模式的 Invariant Test，并且对在测试中发现 bug 使用[回归测试](https://github.com/maple-labs/maple-core-v2/blob/00f01ae7175885f8d49ac201a1c72465e320b2f6/tests/e2e/Regression.t.sol#L53)的方式来确保修复
 - [optimism](https://github.com/ethereum-optimism/optimism/tree/develop/packages/contracts-bedrock/contracts/test/invariants)，Optimism 中的 Invariant Test，使用了 Handler + Actor 结合的模式
+- [How to Foundry with Brock Elmore](https://www.youtube.com/watch?v=Rp_V7bYiTCM)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
+
+### Open Issues
+
+Foundry 的 Invariant Test 还并不足够强大和完善，如果你想对它进行改进，不妨看看以下相关 issue：
+
+- [https://github.com/foundry-rs/foundry/issues/3005](https://github.com/foundry-rs/foundry/issues/3005)
+- [https://github.com/foundry-rs/foundry/issues/2963](https://github.com/foundry-rs/foundry/issues/2963)
+- [https://github.com/foundry-rs/foundry/issues/2985](https://github.com/foundry-rs/foundry/issues/2985)
+- [https://github.com/foundry-rs/foundry/issues/2962](https://github.com/foundry-rs/foundry/issues/2962)
+- [https://github.com/foundry-rs/foundry/issues/2986](https://github.com/foundry-rs/foundry/issues/2986)
+- [https://github.com/foundry-rs/foundry/issues/585](https://github.com/foundry-rs/foundry/issues/585)
+
 
 如果你是一个 Foundry 爱好者，下一个项目请记得一定使用 Invariant Test!
 
