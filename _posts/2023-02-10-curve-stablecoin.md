@@ -338,17 +338,16 @@ PegKeeper 从 Curve V1 中添加/移除 crvUSD 都是单币添加/移除，这�
 
 但是外部调用者并不能随意的调用 PegKeeper，合约内设置有一系列的检查，以防止恶意调用，并确保调用能够让 PegKeeper 产生利润。
 
-要注意的是，PegKeeper 的两种市场调节功能能力并不是完全对称的：
+要注意的是，在应对两种市场情况时，PegKeeper 的能力不是完全对称的：
 
-- 当 $p_s > 1$ 时，PegKeeper 可以无抵押凭空 mint 出 crvUSD 加入到 Curve V1 pool 来进行市场调节，因为 PegKeeper 不需要抵押品，此时 PegKeeper 的市场调节能力是无上限的
-- 当 $p_s < 1$ 时，PegKeeper 只能将之前添加到 Curve V1 pool 中的流动性移除来进行市场调节，此时 PegKeeper 的能力受限于 $p_s > 1$ 时 mint 出的 crvUSD 数量。如果 PegKeeper 此前完全没有 mint 过 crvUSD，或者 PegKeeper 在移除了所有流动性之后，crvUSD 价格仍然小于 1，此时出现巧妇难为无米之炊的情形
+- 当 $p_s > 1$ 时，PegKeeper 可以无抵押凭空 mint 出 crvUSD 加入到 Curve V1 pool 来进行市场调节，因为 PegKeeper 不需要抵押品，此时 PegKeeper 的市场调节能力在理论上是无上限的
+- 当 $p_s < 1$ 时，PegKeeper 只能将之前添加到 Curve V1 pool 中的流动性移除来进行市场调节，此时 PegKeeper 的能力受限于此前在 $p_s > 1$ 时 mint 出的 crvUSD 数量。如果 PegKeeper 此前完全没有 mint 过 crvUSD，或者 PegKeeper 在移除了所有流动性之后，crvUSD 价格仍然小于 1，此时出现巧妇难为无米之炊的情形
 
-因此，为了弥补 $p_s < 1$ 时，PegKeeper 能力不足的缺陷，Curve Stablecoin 还需要其他手段来帮助进行市场调节。
-
+因此，为了弥补 $p_s < 1$ 时，PegKeeper 能力不足的缺陷，Curve Stablecoin 还需要通过调节利息的方式，来进一步帮助 crvUSD 价格锚定。
 
 ## Monetary Policy
 
-一个动态调节借贷利率的组件，用来根据市场供需调节利率，进一步帮助稳定 crvUSD 的价格锚定。
+一个动态调节借贷利率的组件，用来根据市场供需调节利率，进一步帮助稳定 crvUSD 的价格锚定，主要用于 crvUSD 价格 $p_s < 1$ 的场景。
 
 > Curve Stablecoin 的开源代码中利率的实现逻辑和白皮书中略有不同，这里我会按照实际代码中的逻辑来解释。
 
@@ -367,12 +366,12 @@ $$
 可以发现：
 
 - 当 crvUSD 价格大于 1 时，利率相对较低
-- 当 crvUSD 价格小于 1 时，利率会在某个临界点后急剧飙升
+- 当 crvUSD 价格小于 1 时，利率会在某个临界点后急剧飙升（上升速度取决于 $\sigma$）
 
 这么设计的原因：
 
-- 如果 crvUSD 价格大于 1，完全可以靠 PegKeeper 凭空 mint 出 crvUSD 来进行市场调节，此时保持低利率有助于吸引更多用户来铸造 crvUSD
-- 如果 crvUSD 价格小于 1，PegKeeper 只能从 Curve V1 池子中移除 crvUSD 单币来进行市场调节，能力受限。这时会升高 crvUSD 利率逼迫用户偿还债务，来减少市场供给。为了避免脱锚产生的价差过大，利率升高的速度会在 crvUSD 低到某个临界点后急剧上升
+- 如果 crvUSD 价格大于 1，PegKeeper 有足够的能力来进行市场调节，此时保持低利率有助于吸引更多用户来铸造 crvUSD
+- 如果 crvUSD 价格小于 1，PegKeeper 的能力受限。这时为了来减少 crvUSD 的市场供给，需要升高利率来逼迫用户偿还债务。为了避免脱锚产生的价差过大，利率升高的速度会在 crvUSD 低到某个临界点后开始快速上升，上升的速度会取决于 $\sigma$ 参数，利率开始上升的价格取决于 PegKeeper 的债务规模。
 
 另外我们可以观察 $\sigma$ 参数和 PegKeeper 债务比例 $r_{d}$ 的变化对实际利率变化的影响：
 
@@ -382,7 +381,9 @@ $$
 
 ![target-ratio-rate](../img/in-post/curve-stablecoin/target-ratio-rate.gif)
 
-当 PegKeeper 债务占比比较大时，则将曲线整体左移。原因是，如果 PegKeeper 债务占比很大，说明 PegKeeper 在 Curve V1 中有不少流动性，当 crvUSD 价格小于 1时，可以先让 PegKeeper 从 Curve V1 中移除流动性（crvUSD 单币）来减少其债务，同时帮助 crvUSD 价格回归锚定。PegKeeper 债务越多，则需要 crvUSD 价格下跌的越多才会开始快速升高利率，这样做能帮助 PegKeeper 尽可能的控制债务的规模。
+当 PegKeeper 债务占比比较大时，则将曲线整体左移，利率开始上升的价格越低。
+
+这么做的原因是，如果 PegKeeper 债务占比很大，说明 PegKeeper 在 Curve V1 中有不少流动性，当 crvUSD 价格小于 1时，可以先让 PegKeeper 从 Curve V1 中移除流动性（crvUSD 单币）来减少其债务，同时帮助 crvUSD 价格回归锚定。PegKeeper 债务越多，则需要 crvUSD 价格下跌的越多才会开始快速升高利率，这样做能帮助 PegKeeper 控制债务的规模。
 
 ## Oracle
 
