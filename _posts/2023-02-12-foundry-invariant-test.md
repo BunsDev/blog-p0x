@@ -449,7 +449,7 @@ modifier useActor(uint256 actorIndexSeed) {
 ## 更多资料
 
 - [lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)，Invariant Test 最佳实践的完整示例参考
-- [How to Foundry with Brock Elmore](https://www.youtube.com/watch?v=Rp_V7bYiTCM)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
+- [How to Foundry 2.0: Brock Elmore](https://www.youtube.com/watch?v=EHrvD5c93JU)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
 
 想要学习其他项目在生产环境中使用 Invariant Test 的经验，可以参考这些仓库：
 
