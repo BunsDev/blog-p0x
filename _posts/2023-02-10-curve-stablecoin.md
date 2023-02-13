@@ -70,7 +70,7 @@ Curve Stablecoin 就是为了解决上述缺陷而诞生的。在清算层面，
 
 在 Curve Stablecoin 的众多组件中，最为核心的就是 LLAMMA，它是一个专门为清算而设计的 AMM。
 
-假设 crvUSD 使用 ETH 作为抵押品，那么 LAMMA 将是一个 crvUSD-ETH 的 AMM。
+假设 crvUSD 使用 ETH 作为抵押品，那么 LLAMMA 将是一个 crvUSD-ETH 的 AMM。
 
 LLAMMA 使用了类似 Uniswap V3 的设计，例如 LLAMMA 也是用区间（在 LLAMMA 中叫做 band）来划分流动性，用户可以向 AMM 的某一个区间提供流动性。
 
@@ -398,9 +398,13 @@ Q：如何向 LLAMMA 中提供流动性？
 
 A：用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
 
-Q：提供流动性时 band 的数量如果选择？
+Q：mint crvUSD 需要抵押 ETH 向 LLAMMA 提供流动性，那么用户的 ETH 会被放到哪里？
 
-A：用户创建债务时，需要选择抵押品放入 band 的数量，数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
+A：用户需要指定放入 band 的数量，之后 `Controller` 会根据用户债务规模，自动选择一组对用户风险最小的 band（即价格最低的一组 band，但同时还要保证协议不会有坏账风险）。
+
+Q：band 的数量如何选择？
+
+A：用户创建债务时，需要选择 ETH 放入 band 的数量，数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
 
 Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？
 
@@ -424,7 +428,7 @@ A：理论上任何代币都可以，但是 Curve Stablecoin 并不是完全不�
 
 Q：会有 Liquidity Mining 吗？
 
-A：LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概率会支持挖矿，挖矿的算法是被清算资产价值越大，挖矿权重越高，这意味你必须高杠杆借出 crvUSD 并且到达清算线之后才能产生挖矿收益，看起来是一个只适合 degen 的游戏。
+A：LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概率会支持挖矿，挖矿的算法是被清算资产价值越大，挖矿权重越高，这意味你必须高杠杆借出 crvUSD 并且到达清算线之后才能产生挖矿收益，看起来是一个适合 degen 的游戏。
 
 如果有其他问题，欢迎在评论区留言讨论。
 
