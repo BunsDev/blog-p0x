@@ -51,7 +51,7 @@ Invariant Test 是指对系统中的某些不变性（Invariant）进行的测�
 - 随机的调用和所有合约的所有可调用函数，让系统进入随机的状态
 - 每次调用结束，都检查 Invariant 是否满足
 
-为了让系统状态更加随机，整个过程可能会随机调用几千或上万次系统内的函数。
+为了让系统状态更加随机，整个过程可能会随机调用几千或上万次系统内的函数，这样就会更容易发现系统中的 edge cases。
 
 目前有 Contract Invariant test 功能的工具有：[echidna](https://github.com/crytic/echidna), [dapptools](https://github.com/dapphub/dapptools) 和 [foundry](https://github.com/foundry-rs/foundry)。
 
@@ -159,7 +159,7 @@ Fuzz Test 的这些策略都可以通过配置来调整，具体可以参考 [Co
 测试合约中，所有以 `invariant` 开头的函数都会被当作是 Invariant test 来运行。Foundry 会通过这样的策略来进行 Invariant test：
 
 1. 在 `setUp()` 中 deploy 的合约都会被当作目标合约
-2. Foundry 开始一轮的测试
+2. Foundry 调用 `setUp()` 开始新一轮的测试，此时所有合约的状态为 `setUp()` 后的初始状态
 3. Foundry 随机调用某个合约的某个函数（根据合约的 ABI 自动生成调用的参数，类似 Fuzz Test）
 4. 如果函数调用的失败，测试并不会中断
 5. 函数调用结束后，测试预定义的 Invariant
@@ -425,7 +425,7 @@ function deposit(uint256 assets) public virtual {
 
 上面的测试中，函数的 sender 都是 `address(this)`，我们可以使用 actor 模式来给测试生产随机的调用者，可以对待测试函数使用如下 `modifier`：
 
-```
+```solidity
 address[] public actors;
 
 address internal currentActor;
@@ -440,18 +440,76 @@ modifier useActor(uint256 actorIndexSeed) {
 
 更多关于 Invariant Test 使用的最佳实践演示，可以参考这个仓库：[lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)。
 
-### Regression Test
+### Call Summary
+
+Foundry 目前不支持显示在 Invariant Test 中每个函数调用的次数，如果我们想记录和展示这些数据，可以在 Handler 中使用状态变量和 modifier 将每次函数调用都记录下来，最后使用 `console` 打印统计的结果。
+
+
+例如在 `Handler` 中统计调用情况：
+
+```solidity
+contract Handler {
+    mapping(bytes32 => uint256) public numCalls;
+
+    modifier countCall(bytes32 key) {
+        numCalls[key]++;
+        _;
+    }
+
+    ...
+
+    function callSummary() external view {
+        console.log("Call summary:");
+        console.log("-------------------");
+        console.log("deposit", calls["deposit"]);
+        console.log("withdraw", calls["withdraw"]);
+    }
+}
+```
+
+在测试中加入一个专门的 Invariant Test case 来输入 call summary：
+
+```solidity
+    function invariant_callSummary() public view {
+        handler.callSummary();
+    }
+```
+
+接下就可以运行这个 test case 来检查统计结果：
+
+```
+❯ forge test -vv -m invariant_callSummary
+```
+
+注意，结果的输出中只会展示**最后一次** 测试所产生的输出。因此它只能代表最后一轮 run 中的结果。
+
+### Regression Test & Mutation Test
 
 如果使用 Invariant Test 发现了系统中的 bug，我们最好将出现 bug 时系统中的状态记录下来，这样可以在修复 bug 之后还原此状态进行回归测试。
 
-不过 Foundry 目前并不支持输出测试过程中调用的所有函数记录，我们只能使用 `console.log2` 来记录。
+### Test your tests
+
+当我们编写了很多 Invariant Test case 之后，即使这些 test case 都能通过，我们其实也无法能保证测试 case 都是正确的。例如，我们定义了一个永远都正确的 Invariant，那么我们的测试也永远不会出错。
+
+为了验证我们的测试 case 能够发现真正的代码 bug，我们可以这样做：
+
+过程如下：
+
+- 手动修改代码， 故意让其出现 bug
+- 运行 Invariant Test，此时一些 test case 应该出错
+- 把出现 bug 时的代码和修复后的代码使用 `git diff src/XXX.sol > bug1.patch` 保存为 patch 文件，方便之后再次重现
+
+这种测试方式叫做 [mutation testing](https://www.wikiwand.com/en/Mutation_testing) ，有一些工具能够帮助自动基于 solidity 来生成 mutation，如：[gambit](https://github.com/Certora/gambit)。
+
+Foundry 未来也可能集成自动化的 mutation testing，相关讨论在 [https://github.com/foundry-rs/foundry/issues/478](https://github.com/foundry-rs/foundry/issues/478)。
 
 ## 更多资料
 
-- [lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)，Invariant Test 最佳实践的完整示例参考
-- [How to Foundry 2.0: Brock Elmore](https://www.youtube.com/watch?v=EHrvD5c93JU)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看
+- [lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)，Invariant Test 最佳实践的完整示例参考。
+- [horsefacts/weth-invariant-testing](https://github.com/horsefacts/weth-invariant-testing)，[eth_call](https://twitter.com/eth_call) 写的 Invariant Test 教程，使用 WETH9 合约为范例，一步步教你如何编写 Invariant Test，涵盖了 Handler, Ghost Variable, Call Summary, Mutation Test 等内容，非常值得学习。
+- [How to Foundry 2.0: Brock Elmore](https://www.youtube.com/watch?v=EHrvD5c93JU)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看。
 
-想要学习其他项目在生产环境中使用 Invariant Test 的经验，可以参考这些仓库：
+想要学习其他项目在生产环境中使用 Invariant Test 的案例，可以参考这些仓库：
 
 - [maple-labs/maple-core-v2](https://github.com/maple-labs/maple-core-v2/tree/main/tests/invariants)，maple finance 大量使用了 handler 模式的 Invariant Test，并且对在测试中发现 bug 使用[回归测试](https://github.com/maple-labs/maple-core-v2/blob/00f01ae7175885f8d49ac201a1c72465e320b2f6/tests/e2e/Regression.t.sol#L53)的方式来确保修复
 - [optimism](https://github.com/ethereum-optimism/optimism/tree/develop/packages/contracts-bedrock/contracts/test/invariants)，Optimism 中的 Invariant Test，使用了 Handler + Actor 结合的模式
