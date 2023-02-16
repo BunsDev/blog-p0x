@@ -508,6 +508,7 @@ Foundry 未来也可能集成自动化的 mutation testing，相关讨论在 [ht
 - [lucas-manuel/invariant-examples](https://github.com/lucas-manuel/invariant-examples)，Invariant Test 最佳实践的完整示例参考。
 - [horsefacts/weth-invariant-testing](https://github.com/horsefacts/weth-invariant-testing)，[eth_call](https://twitter.com/eth_call) 写的 Invariant Test 教程，使用 WETH9 合约为范例，一步步教你如何编写 Invariant Test，涵盖了 Handler, Ghost Variable, Call Summary, Mutation Test 等内容，非常值得学习。
 - [How to Foundry 2.0: Brock Elmore](https://www.youtube.com/watch?v=EHrvD5c93JU)，这个视频介绍了 Foundry 最新功能的用法，当然也包含 Invariant Test，其中还透露了 [Brock Elmore](https://twitter.com/brockjelmore) 正在开发的 symbolic execution 工具（将更有利于提高测试覆盖率），整个视频都值得一看。
+- [Learn how to fuzz like a pro](https://www.youtube.com/watch?v=QofNQxW_K08&list=PLciHOL_J7Iwqdja9UH4ZzE8dP1IxtsBXI)，Trail of bits 团队对如何使用 echidna 进行 fuzz/invariant test 的详细教学视频。
 
 想要学习其他项目在生产环境中使用 Invariant Test 的案例，可以参考这些仓库：
 
