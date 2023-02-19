@@ -35,13 +35,12 @@ Curve 官方还没有公布这个稳定币的代币名称，后文会使用 crvU
 这样的清算流程会有下面的问题：
 
 1. 当用户保证率不够时，协议就需要清算用户的一部分资产，如果用户资产太多，那么意味着将一次性产生大量的待清算资产。
-2. 清算者通常使用闪电贷的方式来提高资金利用率，这需要在清算完成后，立即将清算到手的资产卖掉来偿还闪电贷，这样就会对现货市场产生大量的抛压。
-3. 如果清算资产的现货流动性不足，伴随着大量抛压，可能造成资产的价格进一步下跌，从而导致其他用户也被清算，发生连环清算。
-4. 如果资产价格持续下跌，而清算又不能及时完成，协议将会面临坏账的风险。
-5. 为了保证清算者有足够的动力，用户的资产会被低价卖出，这样每次清算都会给用户带来不小的损失。
-6. 清算一旦发生，用户将产生不可逆的损失，即使清算后用户的抵押资产价格上涨，产生的损失也无法再挽回了。
+2. 清算者通常使用闪电贷的方式来提高资金利用率，这需要在清算完成后，立即将清算到手的资产卖掉来偿还闪电贷，这样就会对现货市场产生大量的抛压，当待清算资产仓位太大时，很有可能出现现货市场价格暴跌。
+3. 如果资产价格持续下跌，而清算又不能及时完成，协议将会面临坏账的风险。
+4. 为了保证清算者有足够的动力，用户的资产会被低价卖出，这样每次清算都会给用户带来不小的损失。
+5. 清算一旦发生，用户将产生不可逆的损失，即使清算后用户的抵押资产价格上涨，产生的损失也无法再挽回了。
 
-关于第 4 点中提到的协议坏账风险，这里有一个实际发生的例子：[How AAVE's $1.6 Million Bad Debt Was Created](https://eigenphi.substack.com/p/how-aaves-16-million-bad-debt-was-333).
+关于上面提到的协议坏账风险，这里有一个实际发生的例子：[How AAVE's $1.6 Million Bad Debt Was Created](https://eigenphi.substack.com/p/how-aaves-16-million-bad-debt-was-333).
 
 一个大户 Avi（Mango 协议的攻击者）在 AAVE 中抵押了大量资产借出 CRV，想通过售卖 CRV 借机清算 Curve 创始人 Michael 的仓位（Michael 在 AAVE 上抵押 CRV 借出了大量 USDC），Michael 随即在当天公开了 Curve Stablecoin 的白皮书作为回应（意思是我们还有很多 alpha 呢）。由于散户情绪被点燃，纷纷主动买入 CRV 拉高价格，导致 Avi 在 AAVE 的仓位被清算，而 Avi 的仓位太大，整个清算过程持续了几十分钟，由于清算不够及时，最终 AAVE 产生了 $1.6m 的坏账。
 
@@ -86,10 +85,10 @@ LLAMMA 使用了类似 Uniswap V3 的设计，例如 LLAMMA 也是用区间（�
 
 这么做的好处是：
 
-- AMM 自带流动性，减小了对外部流动性的依赖（但并不是完全不依赖，原因见 [FAQs](#faqs)）
+- AMM 自带流动性，减小了对外部流动性的依赖（但也并不是完全不依赖）
 - 不需要传统借贷协议的清算者（但在某些极端情况仍然会发生强制清算），整个清算过程是伴随价格下跌，AMM 内余额的 rebalance 来完成的
 - 清算是持续性的，而非阶段性的，这样用户资产每次被卖出时会以更贴近市场外部价格的水平被卖出，对用户来说，清算造成的损失也就更小
-- 如果价格反弹，crvUSD 会被转换成 ETH，用户的资产被买回，这样就能在波动性的市场中，避免了用户产生永久性损失（但也即使价格还原，也很难做到完全无损失，原因见 [FAQs](#faqs)）
+- 如果价格反弹，crvUSD 会被转换成 ETH，用户的资产被买回，这样就能在波动性的市场中，避免了用户产生永久性损失（但也即使价格还原，也很难做到完全无损失，因为 LLAMMA 始终都会让 Pool 中的资产折价被卖出）
 
 ### LLAMMA 设计
 
@@ -395,39 +394,39 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 下面是关于 Curve Stablecoin 的一些常见问题
 
-Q：如何向 LLAMMA 中提供流动性？
+**Q：如何向 LLAMMA 中提供流动性？**
 
 A：用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
 
-Q：mint crvUSD 需要抵押 ETH 向 LLAMMA 提供流动性，那么用户的 ETH 会被放到哪里？
+**Q：mint crvUSD 需要抵押 ETH 向 LLAMMA 提供流动性，那么用户的 ETH 会被放到哪里？**
 
 A：用户需要指定放入 band 的数量，之后 `Controller` 会根据用户债务规模，自动选择一组对用户风险最小的 band（即价格最低的一组 band，但同时还要保证协议不会有坏账风险）。
 
-Q：band 的数量如何选择？
+**Q：band 的数量如何选择？**
 
 A：用户创建债务时，需要选择 ETH 放入 band 的数量，数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
 
-Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？
+**Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？**
 
-A：大概率会，因为 LLAMMA 的特性导致 Pool 会做低卖高买的操作，即使价格还原，Pool 中的资产也可能变少。
+A：目前来看大概率会，因为 LLAMMA 的特性导致 Pool 会做低卖高买的操作，即使价格还原，Pool 中的资产也可能变少。
 
-Q：Curve Stablecoin 的协议有收益吗？
+**Q：Curve Stablecoin 协议层面有哪些收益？**
 
 A：协议会有 LLAMMA 手续费，crvUSD 利息和 PegKeeper 利润三部分收益。
 
-Q：Curve Stablecoin 完全避免了清算吗？
+**Q：Curve Stablecoin 完全避免了清算吗？**
 
 A：并不是，仍然会出现强制清算的情况，当用户的预估清算后价值小于其债务时，清算者可以强制清算掉用户的资产，即将用户的资产从 LLAMMA 中取出，提前偿还其债务。
 
-Q：Curve Stablecoin 产生了哪些套利机会？
+**Q：Curve Stablecoin 产生了哪些套利机会？**
 
 A：LLAMMA 会产生 Dex 价差套利机会，PegKeeper 在有利可图时也可以进行套利。
 
-Q：哪些代币可以作为抵押品？
+**Q：哪些代币可以作为抵押品？**
 
 A：理论上任何代币都可以，但是 Curve Stablecoin 并不是完全不依赖外部流动性，当抵押品价格降低，LLAMMA 下调价格后，仍然需要有外部 DEX/CEX 的流动性配合 LLAMMA 进行价差套利，套利者才有利可图。因此大概率最先上线支持的抵押品是 ETH，后续也可能支持新的抵押品。
 
-Q：会有 Liquidity Mining 吗？
+**Q：会有 Liquidity Mining 吗？**
 
 A：LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概率会支持挖矿，挖矿的算法是被清算资产价值越大，挖矿权重越高，这意味你必须高杠杆借出 crvUSD 并且到达清算线之后才能产生挖矿收益，看起来是一个适合 degen 的游戏。
 
@@ -438,7 +437,7 @@ Ref:
 - [Curve stablecoin whitepaper](https://github.com/curvefi/curve-stablecoin/blob/master/doc/curve-stablecoin.pdf)
 - [From Uniswap v3 to crvUSD LLAMMA](https://www.curve.wiki/post/from-uniswap-v3-to-crvusd-llamma-%E8%8B%B1%E6%96%87%E7%89%88)
 
-另感谢 [@0xstan](https://twitter.com/0xstan_) 和 [@0xmc](https://twitter.com/0xMC_com) 在学习过程中的交流和讨论。
+另感谢 [@0xstan](https://twitter.com/0xstan_) 和 [@0xmc](https://twitter.com/0xMC_com) 在研究过程中的交流和讨论。
 
 
 
