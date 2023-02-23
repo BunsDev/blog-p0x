@@ -394,7 +394,7 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 下面是关于 Curve Stablecoin 的一些常见问题
 
-### Q: Curve Stablecoin 的最高借贷率是多少？
+### Curve Stablecoin 的最高借贷率是多少？
 
 取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
 
