@@ -394,9 +394,9 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 下面是关于 Curve Stablecoin 的一些常见问题
 
-**Q: Curve Stablecoin 的最高借贷率是多少？**
+### Q: Curve Stablecoin 的最高借贷率是多少？
 
-A：取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
+取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
 
 前文中提过，当用户创建债务时，curve 预估的清算价格为 $\sqrt{p↑ \cdot p↓}$
 
@@ -420,25 +420,28 @@ $$
 
 此时清算的起始价格为 $p$，清算结束价格为 $p \cdot 0.99^5 \approx 0.95p$，预估平均清算价格为 $p \cdot 0.99^{2.5} \approx 0.97p$
 
-**Q：如何向 LLAMMA 中提供流动性？**
+### 如何向 LLAMMA 中提供流动性？
 
-A：用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
+用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
 
-**Q：mint crvUSD 需要抵押 ETH 向 LLAMMA 提供流动性，那么用户的 ETH 会被放到哪里？**
+### mint crvUSD 需要抵押 ETH 向 LLAMMA 提供流动性，那么用户的 ETH 会被放到哪里？
 
-A：用户需要指定放入 band 的数量，之后 `Controller` 会根据用户债务规模，自动选择一组对用户风险最小的 band（即价格最低的一组 band，但同时还要保证协议不会有坏账风险）。
+用户需要指定放入 band 的数量，之后 `Controller` 会根据用户债务规模，自动选择一组对用户风险最小的 band（即价格最低的一组 band，但同时还要保证协议不会有坏账风险）。
 
-**Q：band 的数量如何选择？**
+### band 的数量如何选择？
 
-A：用户创建债务时，需要选择 ETH 放入 band 的数量。
+用户创建债务时，需要选择 ETH 放入 band 的数量。
 
 当 mint crvUSD 数量相同时，band 数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
 
 如果想要更高的借贷率，则需要选择更少的 band 数量，但同时也会增加清算的风险。
 
-**Q: Controller 在 `create_loan` 时，如何将用户的 ETH 选择合适的 band 并添加流动性**
+### 用户在 mint crvUSD 时，Curve 具体是如何将用户 ETH 添加到 LLAMMA 中的？
 
-A：Curve 会尽量将用户的 ETH 加入到价格较低的 band 中，但同时也要保证协议不会有坏账风险。Curve Stablecoin 会根据用户的 ETH 数量，选择的band 宽度，以及 mint crvUSD 的数量，选择合适的 band 并添加流动性。具体的逻辑如下：
+- 因为用户的抵押品只有 ETH，那么这一定是一个单边流动性，即 band 中只有 ETH。
+- Curve 会尽量将用户的 ETH 加入到价格较低的 band 中，但同时也要保证协议不会有坏账风险。
+
+Curve 会根据用户的 ETH 数量，用户选择的 band 宽度，以及 mint crvUSD 的数量，选择合适的 band 并添加流动性。具体的逻辑如下：
 
 假设用户的抵押品 ETH 数量为 $y$，我们可以用白皮书中的公式 10 来计算当用户的 ETH 被交易成 crvUSD 时得到的数量（为了简化，这里忽略 `loan_discount`）：
 
@@ -507,29 +510,38 @@ $$
 最终我们就计算出，用户的 ETH 被加入到 $[n_1 + m,\ n_1 + m + N]$ 的 band 中。这代码中，这部分实现在 `Controller._calculate_debt_n1()` 函数中。
 
 
-**Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？**
+### 如果 ETH 价格下跌，导致用户的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，用户还会有损失吗？
 
-A：目前来看大概率会，因为 LLAMMA 的特性导致 Pool 会做低卖高买的操作，即使价格还原，Pool 中的资产也可能变少。
+大概率会，因为 LLAMMA 的特性导致 Pool 会做低卖高买的操作，即使价格还原，Pool 中的资产也可能变少。
 
-**Q：Curve Stablecoin 协议层面有哪些收益？**
+### Curve Stablecoin 协议层面有哪些收益？
 
-A：协议会有 LLAMMA 手续费，crvUSD 利息和 PegKeeper 利润三部分收益。
+协议会有 LLAMMA 手续费，crvUSD 利息和 PegKeeper 利润三部分收益。
 
-**Q：Curve Stablecoin 完全避免了清算吗？**
+### Curve Stablecoin 完全避免了清算吗？
 
-A：并不是，仍然会出现强制清算的情况，当用户的预估清算后价值小于其债务时，清算者可以强制清算掉用户的资产，即将用户的资产从 LLAMMA 中取出，提前偿还其债务。
+并不是，仍然会出现强制清算的情况，当用户的预估清算后价值小于其债务时，清算者可以强制清算掉用户的资产，即将用户的资产从 LLAMMA 中取出，提前偿还其债务。
 
-**Q：Curve Stablecoin 产生了哪些套利机会？**
+### Curve Stablecoin 产生了哪些套利机会？
 
-A：LLAMMA 会产生 Dex 价差套利机会，PegKeeper 在有利可图时也可以进行套利。
+LLAMMA 会产生 Dex 价差套利机会，另外当 crvUSD 脱锚时，PegKeeper 也会产生套利机会。
 
-**Q：哪些代币可以作为抵押品？**
+### 哪些代币可以作为抵押品？
 
 A：理论上任何代币都可以，但是 Curve Stablecoin 并不是完全不依赖外部流动性，当抵押品价格降低，LLAMMA 下调价格后，仍然需要有外部 DEX/CEX 的流动性配合 LLAMMA 进行价差套利，套利者才有利可图。因此大概率最先上线支持的抵押品是 ETH，后续也可能支持新的抵押品。
 
-**Q：会有 Liquidity Mining 吗？**
+### 会有 Liquidity Mining 吗？
 
-A：LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概率会支持挖矿，挖矿的算法是被清算资产价值越大，挖矿权重越高，这意味你必须高杠杆借出 crvUSD 并且到达清算线之后才能产生挖矿收益，看起来是一个适合 degen 的游戏。
+LLAMMA 合约层面适配了 CurveDAO Gauge 相关接口的， 因此大概率会支持挖矿，挖矿的算法是被清算资产价值越大，挖矿权重越高，这意味你必须借出 crvUSD 并且到达清算线之后才能产生挖矿收益，看起来是一个适合 degen 的游戏。
+
+### 有什么好的对冲策略吗？
+
+LLAMMA 的特性决定了他是一个和 Uniswap V3 相反的 AMM，那么可以考虑这样对冲清算风险：
+
+- 假设借出 1000 crvUSD ，ETH 被加入到了 LLAMMA 里 `[1300 ~ 1500]` 范围的 band 中
+- 此时可以用 USDC/DAI/USDT 等代币在 Uniswap V3 上选择 `[1300 ~ 1500]` 范围加入单边流动性，USDC 数量也为 1000
+
+这样当 ETH 价格下跌至 1500 时，LLAMMA 中的 ETH 会开始被卖出，但同时 Uniswap V3 中也会开始买入 ETH，这样就可以在任意价格维持 ETH 敞口不变。
 
 如果有其他问题，欢迎在评论区留言讨论。
 
