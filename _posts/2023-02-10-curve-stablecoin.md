@@ -398,6 +398,8 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 A：取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
 
+前文中提过，当用户创建债务时，curve 预估的清算价格为 $\sqrt{p↑ \cdot p↓}$
+
 假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，则可以借出最多的 crvUSD 数量为：
 
 $$
