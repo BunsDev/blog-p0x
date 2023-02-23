@@ -420,7 +420,6 @@ $$
 
 此时清算的起始价格为 $p$，清算结束价格为 $p \cdot 0.99^5 \approx 0.95p$，预估平均清算价格为 $p \cdot 0.99^{2.5} \approx 0.97p$
 
-
 **Q：如何向 LLAMMA 中提供流动性？**
 
 A：用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
@@ -436,6 +435,77 @@ A：用户创建债务时，需要选择 ETH 放入 band 的数量。
 当 mint crvUSD 数量相同时，band 数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
 
 如果想要更高的借贷率，则需要选择更少的 band 数量，但同时也会增加清算的风险。
+
+**Q: Controller 在 `create_loan` 时，如何将用户的 ETH 选择合适的 band 并添加流动性**
+
+A：Curve 会尽量将用户的 ETH 加入到价格较低的 band 中，但同时也要保证协议不会有坏账风险。Curve Stablecoin 会根据用户的 ETH 数量，选择的band 宽度，以及 mint crvUSD 的数量，选择合适的 band 并添加流动性。具体的逻辑如下：
+
+假设用户的抵押品 ETH 数量为 $y$，我们可以用白皮书中的公式 10 来计算当用户的 ETH 被交易成 crvUSD 时得到的数量（为了简化，这里忽略 `loan_discount`）：
+
+$$
+x_↓ = y\sqrt{p_↑p_↓} = yp_↑\sqrt{\frac{A-1}{A}}
+$$
+
+用户的 ETH 被放入到了 N 个 band 中，每个 band 中 ETH 的数量为 $\frac{y}{N}$，假设价格最高的 band 编号为 $n_1$，上面的公式展开后可以得到：
+
+$$
+x_↓ = \frac{yp_↑}{N} \cdot \sum_{k=0}^{N-1}(\sqrt{\frac{A-1}{A}})^k
+$$
+
+我们定义一个仅与用户 band 宽度 $N$ 相关而与 band 价格无关的变量 $y_{effective}$:
+
+$$
+y_{effective} = \frac{y}{N} \cdot \sum_{k=0}^{N-1}(\sqrt{\frac{A-1}{A}})^k
+$$
+
+同时定义 $x_↓$ 为 $x_{effective}$，上面的公式简化为：
+
+$$
+x_{effective} = y_{effective} \cdot p_↑
+$$
+
+这里的 $p_↑$ 指的是用户 ETH 所加入 band 中的最高 $p_↑$ 价格，在代码中，$y_{effective}$ 的计算由 `Controller.get_y_effective()` 函数实现。
+
+接下来我们首先假设用户的 ETH 被放到了价格最高的 band 中（低于当前 AMM 价格的 band），假设此 band 编号为 $n_1$，则此时 $x_{effective}$ 为：
+
+$$
+x_{effective} = y_{effective} \cdot p_{↑(n_1)}
+$$
+
+假设用户 mint 的 crvUSD 数量为 $debt$，为了将用户的 ETH 加入到价格最低的 band 中，我们需要将 $x_{effective}$ 降低，但又不能小于 $debt$（否则协议有坏账风险），即：
+
+$$
+\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1} \geq 1
+$$
+
+接下来，我们的任务就是找到能使上式满足的最大 $n_1$ 值，$n_1$ 越大则用户 ETH 加入的 band 价格越低。在代码中，使用对数计算来完成上述过程：
+
+$$
+log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1}) \geq 0
+$$
+
+假设我们需要将 band 编号从 $n_1$ 增大到 $n_1 + m$，则：
+
+$$
+log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1} \cdot (\frac{A-1}{A})^m) \geq 0
+$$
+
+$$
+log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1}) \geq m \cdot log(\frac{A}{A-1})
+$$
+
+$$
+m \leq \frac{log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1})}{log(\frac{A}{A-1})}
+$$
+
+m 为整数，则：
+
+$$
+m = \lfloor \frac{log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1})}{log(\frac{A}{A-1})} \rfloor
+$$
+
+最终我们就计算出，用户的 ETH 被加入到 $[n_1 + m,\ n_1 + m + N]$ 的 band 中。这代码中，这部分实现在 `Controller._calculate_debt_n1()` 函数中。
+
 
 **Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？**
 
