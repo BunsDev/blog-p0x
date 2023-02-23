@@ -394,6 +394,29 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 下面是关于 Curve Stablecoin 的一些常见问题
 
+**Q: Curve Stablecoin 的最高借贷率是多少？**
+
+A：取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
+
+假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，则可以借出最多的 crvUSD 数量为：
+
+$$
+x_{effective} = y \cdot (1-r) \cdot \sqrt{(p \cdot p \cdot (\frac{A-1}{A})^N)} = y \cdot (1-r) \cdot p \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
+$$
+
+那么最高抵押率即为
+
+$$
+(1-r) \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
+$$
+
+根据测试代码中的设定的 $A=100$，$r=0.05$，选择 band 数量 $N=5$ 时，借贷率最高，大概为：
+
+$$
+(1-0.05) \cdot (\frac{99}{100})^{\sqrt{\frac{5}{2}}} \approx 92.64\%
+$$
+
+
 **Q：如何向 LLAMMA 中提供流动性？**
 
 A：用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
@@ -405,6 +428,8 @@ A：用户需要指定放入 band 的数量，之后 `Controller` 会根据用�
 **Q：band 的数量如何选择？**
 
 A：用户创建债务时，需要选择 ETH 放入 band 的数量，数量越多，抵押品分布越分散，清算的起始价格会高一些，数量越少，则抵押品分布越集中，清算的起始价格会相对低一些。
+
+如果想要更高的借贷率，则需要选择更少的 band 数量，但同时也会增加清算的风险。
 
 **Q：如果 ETH 价格下跌，导致我的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，我的 ETH 还会有损失吗？**
 
