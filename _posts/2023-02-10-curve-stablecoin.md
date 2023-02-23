@@ -507,7 +507,7 @@ $$
 m = \lfloor \frac{log(\frac{y_{effective} \cdot p_{↑(n_1)}}{debt + 1})}{log(\frac{A}{A-1})} \rfloor
 $$
 
-最终我们就计算出，用户的 ETH 被加入到 $[n_1 + m,\ n_1 + m + N]$ 的 band 中。这代码中，这部分实现在 `Controller._calculate_debt_n1()` 函数中。
+上面的 $\lfloor \ \rfloor$ 表示向下取整，这样我们就可以计算出，用户的 ETH 被加入到 $[n_1 + m,\ n_1 + m + N]$ 的 band 中。这代码中，这部分实现在 `Controller._calculate_debt_n1()` 函数中。
 
 
 #### 如果 ETH 价格下跌，导致用户的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，用户还会有损失吗？
