@@ -406,7 +406,7 @@ $$
 x_{effective} = y \cdot (1-r) \cdot \sqrt{(p \cdot p \cdot (\frac{A-1}{A})^N)} = y \cdot (1-r) \cdot p \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
 $$
 
-那么最高抵押率即为
+那么最高借贷率为：
 
 $$
 (1-r) \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
