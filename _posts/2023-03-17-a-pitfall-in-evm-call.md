@@ -32,7 +32,7 @@ Optimism 中为跨链交易设计了两种叫做 Deposits 和 Withdrawals 的交
 4. 用户在 L1 调用 `OptimismPortal.proveWithdrawalTransaction()`，使用 storage root 和 proofs 来证明交易的存在性
 5. 等待 7 天的挑战期
 6. 任何人可以调用 `OptimismPortal.finalizeWithdrawalTransaction()` 来将用户的跨链交易执行
-7. 在 `OptimismPortal.finalizeWithdrawalTransaction()` 中会转发执行用户的交易，交易时会使用 `call(gas, target, value, ...)` 来完成，其中 `gas` 为用户指定的 `gasLimit`
+7. 在 `OptimismPortal.finalizeWithdrawalTransaction()` 中会转发执行用户的交易，具体会使用 `call(gas, target, value, ...)` 来完成，其中 `gas` 为用户指定的 `gasLimit`
 8. 如果交易中 `value` 不为 0，则会从 `OptimismPortal` 合约转出指定数量的 ETH 到 `target` 地址
 9. 交易一旦被执行，无论成功与否，都不可以再重新执行了
 
