@@ -238,7 +238,7 @@ function finalizeWithdrawalTransaction(Types.WithdrawalTransaction memory _tx) e
 
 在执行用户的 withdrawal 交易时，OP 先确认当前剩余的 gas 大于 `_tx.gasLimit + FINALIZE_GAS_BUFFER`，然后再调用 `SafeCall.call()` 来执行用户的 withdrawal 交易。
 
-我们假设 Optimism 修复了 Sherlock 中的[问题](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109)，将第一步检查中的 `FINALIZE_GAS_BUFFER` 由 `20_000` 增大为 `25_122`。这样修改后，就能保证在 `SafeCall.call` 调用用户交易时，gasLimit 一定大于用户设定的 gasLimit 吗？
+我们假设 Optimism 修复了上面提到的 Sherlock 中的[问题](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109)，将第一步检查中的 `FINALIZE_GAS_BUFFER` 由 `20_000` 增大为 `25_122`。这样修改后，就能保证在 `SafeCall.call` 调用用户交易时，gasLimit 一定大于用户设定的 gasLimit 吗？
 
 因为 63/64 规则的存在，答案是否定的。如果在调用 `SafeCall.call()` 时 `gasleft() - FINALIZE_GAS_BUFFER` 参数的值大于 `gasleft() * 63 / 64`，EVM 就会使用 `gasleft() * 63 / 64` 作为实际的 gasLimit，而不是代码中指定的 gasLimit，这样就有可能导致本来可以成功的用户交易执行失败。
 
