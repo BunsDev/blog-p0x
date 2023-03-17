@@ -109,7 +109,9 @@ library SafeCall {
 
 在 Sherlock audit contest 中，针对这段代码，一共有 2 个 high 级别的 bug，其中一个就是利用 gasLimit，让用户的交易 gas 不足而进行的攻击，具体细节在：[Malicious user can finalize other’s withdrawal with less than specified gas limit, leading to loss of funds](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109)。
 
-这个 bug 的原因是 `OptimismPortal.finalizeWithdrawalTransaction()` 在检查确认剩余 gas，到实际执行交易之间，进行了 `SSTORE` 等操作，这些操作会消耗 gas，导致实际执行交易时，剩余的 gas 小于用户指定的 gasLimit，在极端情况下会导致本来可以成功的交易因为 gas 不足而失败。要修复这个 bug，可以通过这样的方式来完善这个检查：
+这个 bug 的原因是 `OptimismPortal.finalizeWithdrawalTransaction()` 在检查确认剩余 gas，到实际执行用户交易之间，进行了 `SSTORE` 等其他操作，这些操作会消耗 gas，导致实际执行交易时，在  `CALL` 中指定的 gas 会小于用户指定的 gasLimit，这会导致在极端情况下本来可以成功的交易因为 gas 不足而失败。
+
+要修复这个 bug，可以通过这样的方式来完善这个检查：
 
 ```solidity
     require(gasleft() >= _tx.gasLimit + FINALIZE_GAS_BUFFER + 5122); // Add more on gas buffer
