@@ -123,7 +123,9 @@ library SafeCall {
 
 ![call-stack-depth](../img/in-post/a-pitfall-in-evm-call/call-stack-depth.png)
 
-在早期的以太坊实现中，EVM Call Stack 不能超过 1024，这样就给了攻击中故意制造 Call Stack 爆炸从而让交易故意失败的可能。为了避免这种攻击的发生，在 [EIP-150](https://eips.ethereum.org/EIPS/eip-150) 中，这个限制被移除了。但是，EVM 在执行 Call/StaticCall/DelegateCall 时，默认会将 gasLimit 设置为剩余的 gas 设置为 63/64，以保证 Call 结束后仍有一定的 gas 用来做后续的操作。
+在以太坊实现中，EVM Call Stack 不能超过 1024，否则交易失败。在早期，这个规则给了攻击中故意制造 Call Stack 爆炸从而让交易失败的可能。为了解决这个问题，在 [EIP-150](https://eips.ethereum.org/EIPS/eip-150) 中，通过引入 63/64 规则的方式，使得这种攻击不再成为可能。
+
+具体做法是，EIP-150 之后，当 EVM 在执行 Call/StaticCall/DelegateCall 时，gasLimit 最多不可以超过当前剩余的 gas 的 63/64，这样一来，如果 Call Stack 过多，可用 gasLimit 会不断减少，创造 1024 个 Call Stack 已经成为了不可能：`1 * (63/64)^1024 = 0.0000000976`。
 
 为了更深入的理解这个 63/64 规则，我翻看了一下 go-ethereum 的代码。我们先回顾一下 `CALL` opcode，它需要 7 个参数：`gas`, `address`, `value`, `argsOffset`, `argsSize`, `retOffset`, `retSize`（参考 (CALL opcode)[https://www.evm.codes/#f1?fork=merge]）。这些参数都是在 EVM 的栈中保存的，而 `gas` 参数是在栈顶的第一个参数。
 
