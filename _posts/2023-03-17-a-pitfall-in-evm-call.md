@@ -24,7 +24,7 @@ Optimism 中为跨链交易设计了两种分别叫做 Deposits 和 Withdrawals 
 
 因此，用户在使用跨链交易转移 ETH 时，需要非常小心，确保交易不会失败。在 Optimism 中，交易失败的原因有很多，其中一种是，此交易消耗的 gas 超过了用户指定的 gasLimit：Optimism 在处理跨链交易时，会按照用户指定的 gasLimit 来执行交易，如果交易执行过程中消耗的 gas 超过了 gasLimit，那么交易就会失败。
 
-我们来看一下一个跨链交易的流程，以 L2 -> L1 交易为例：
+我们来看一下一个 Withdrawal 跨链交易（ L2 -> L1 ）的过程：
 
 1. 用户在 L2 的 `L2ToL1MessagePasser` 合约发起一个跨链交易，目标链为 L1，需要指定交易的 `target`, `value`, `gasLimit`, `data`
 2. Optimism 会对这个交易参数计算 hash，并将 hash 作为 key，保存在合约的一个 mapping 中
