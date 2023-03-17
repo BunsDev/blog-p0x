@@ -105,7 +105,7 @@ library SafeCall {
 }
 ```
 
-可以看到这里是调用了 `CALL` 这个 opcode 来完成交易的转发，并且交易是否成功都不会影响此函数的运行。这意味着，如果用户的交易失败了，那么 `OptimismPortal.finalizeWithdrawalTransaction()` 也会返回成功，用户也无法再次发起交易来取回 ETH。
+可以看到最终是调用 `CALL` opcode 来完成用户交易的转发，并且交易是否成功都不会影响此函数的运行。这意味着，如果用户的交易失败了，那么 `OptimismPortal.finalizeWithdrawalTransaction()` 也会返回成功，用户也无法再次发起交易来取回 ETH。
 
 在 Sherlock audit contest 中，针对这段代码，一共有 2 个 high 级别的 bug，其中一个就是利用 gas 进行的攻击，具体细节在：[Malicious user can finalize other’s withdrawal with less than specified gas limit, leading to loss of funds](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109)。
 
