@@ -12,15 +12,15 @@ tags:
     - Solidity
 ---
 
-故事要从 Optimism Bedrock 说起，这些天在研究了 Optimism Bedrock 版本的代码，在无意中发现了一个之前一直没注意到的问题：在一些 edge case 下，**EVM `CALL`（也包含 `STATICCALL`, `DELEGATECALL`） Opcode 使用的 gasLimit 可能和预期不一致**。
+故事要从 Optimism Bedrock 说起，这些天在研究了 Optimism Bedrock 的代码，在无意中发现了一个之前一直没注意到问题：在一些 edge case 下，**EVM `CALL`（也包含 `STATICCALL`, `DELEGATECALL`） Opcode 使用的 gasLimit 可能和预期不一致**。
 
-一般情况下，这个设计不会对应用产生太大的安全风险，但是在 Optimism Bedrock 的设计中，这个问题可能被恶意利用，从而导致用户的资产被永久锁定，产生严重的后果，因此我觉得有必要写一篇文章来揭露这个很容易被忽视的问题。
+一般情况下，这个设计不会对应用产生太大的安全风险，但是在 Optimism Bedrock 的设计中，这个问题可能被恶意利用，从而导致用户的资产被永久锁定，产生严重的后果，甚至 Optimism 团队在最开始也没有意识到这个问题。因此我觉得有必要写一篇文章来揭露这个很容易被忽视的问题。
 
 ## Optimism Bedrock 的跨链交易
 
-Optimism 中为跨链交易设计了两种分别叫做 Deposits 和 Withdrawals 的交易类型，分别表示 L1 -> L2 和 L2 -> L1 的交易类型。通过这两种类型的交易， 用户可以在 L1 call L2 合约，也可以在 L2 call L1 的合约，同时还可以在交易中设定 `msg.value` 从而实现 ETH 的跨链转移。
+Optimism 中为跨链交易设计了两种叫做 Deposits 和 Withdrawals 的交易类型，分别表示 L1 -> L2 和 L2 -> L1 的交易类型。通过这两种类型的交易， 用户可以从 L1 调用 L2 地址，也可以从 L2 调用 L1 地址，同时还可以在交易中设定 `msg.value` 从而实现 ETH 的跨链转移。
 
-在 Optimism 中，这类交易都是不可以重试的（not retryable）,这意味着用户在发起交易后，如果交易失败，用户就无法再次发起交易，也就无法再次尝试。这样设计的结果是，如果用户的交易中附带了 ETH（`msg.value`），一旦交易失败，这些 ETH 就会被永久锁定在合约中，用户无法再次发起交易来取回这些 ETH。
+在 Optimism 中，这类交易都是**不可以重试的（not retryable）**，这意味着用户在发起交易后，如果交易失败，用户就无法再次发起交易，也就无法再次尝试。这样设计的结果是，如果用户的交易中附带了 ETH（`msg.value`），一旦交易失败，这些 ETH 就会被永久锁定在合约中，用户无法再次发起交易来取回这些 ETH。
 
 因此，用户在使用跨链交易转移 ETH 时，需要非常小心，确保交易不会失败。在 Optimism 中，交易失败的原因有很多，其中一种是，此交易消耗的 gas 超过了用户指定的 gasLimit：Optimism 在处理跨链交易时，会按照用户指定的 gasLimit 来执行交易，如果交易执行过程中消耗的 gas 超过了 gasLimit，那么交易就会失败。
 
