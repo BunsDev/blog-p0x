@@ -38,7 +38,7 @@ Optimism 中为跨链交易设计了两种分别叫做 Deposits 和 Withdrawals 
 
 我们忽略前面在 L2 发起交易和在 L1 证明的步骤，只关注 6，7，8 步中交易执行部分。`OptimismPortal.finalizeWithdrawalTransaction()` 函数执行用户交易相关的代码片段：
 
-> 后文中代码片段均来自于 Optimism Bedrock 在 Sherlock contest 的代码，代码版本为 [3f4b3c3281](https://github.com/ethereum-optimism/optimism/tree/3f4b3c328153a8aa03611158b6984d624b17c1d9)
+> 引用的代码片段均来自于 Optimism Bedrock 在 Sherlock contest 的代码，版本为 [3f4b3c3281](https://github.com/ethereum-optimism/optimism/tree/3f4b3c328153a8aa03611158b6984d624b17c1d9)
 
 ```solidity
 function finalizeWithdrawalTransaction(Types.WithdrawalTransaction memory _tx) external {
