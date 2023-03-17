@@ -114,7 +114,7 @@ library SafeCall {
 要修复这个 bug，可以通过这样的方式来完善这个检查：
 
 ```solidity
-    require(gasleft() >= _tx.gasLimit + FINALIZE_GAS_BUFFER + 5122); // Add more on gas buffer
+require(gasleft() >= _tx.gasLimit + FINALIZE_GAS_BUFFER + 5122); // Add more on gas buffer
 ```
 
 这里的 `5122` 就是在检查完成之后，`call` 之前，所需要消耗的 gas。这样就可以保证在执行交易之前，传递给 `call` 的 gas 足够执行交易了。
