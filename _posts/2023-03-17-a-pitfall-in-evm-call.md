@@ -420,6 +420,6 @@ Test result: ok. 1 passed; 0 failed; finished in 5.46ms
 
 ## Bug 修复
 
-正当我以为自己发现了一个新 bug，想报告给 Optimism 团队时，打开 GitHub 检查了一下他们的最新代码，发现他们已经意识到了这个问题，并且完成了修复，可以看他们最新版 [SafeCall.callWithMinGas()](https://github.com/ethereum-optimism/optimism/blob/2351ed462355cd516ddb8176d1ffdae607d1b7ed/packages/contracts-bedrock/contracts/libraries/SafeCall.sol#L56-L63) 函数中的修复方式。
+正当我以为自己发现了一个新 bug，想报告给 Optimism 团队时，打开 GitHub 检查了一下他们的最新代码，发现他们已经意识到了这个问题，并且在一周前就完成了修复，可以看他们最新版 [SafeCall.callWithMinGas()](https://github.com/ethereum-optimism/optimism/blob/2351ed462355cd516ddb8176d1ffdae607d1b7ed/packages/contracts-bedrock/contracts/libraries/SafeCall.sol#L56-L63) 函数中的修复方式。
 
 好吧，看来与 Bug Bounty 无缘了，不过这也算是一个值得写篇文章记录的「坑」了。
