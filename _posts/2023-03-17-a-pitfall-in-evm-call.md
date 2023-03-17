@@ -251,7 +251,7 @@ function finalizeWithdrawalTransaction(Types.WithdrawalTransaction memory _tx) e
 
 ## 测试用例
 
-我们参考 [issue-109](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109) 中的测试用例，可以构造出这个攻击 case。
+我们参考 [issue-109](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109) 中的测试用例，可以验证这个攻击 case 是否有效。
 
 简化后的 `Portal` 合约和用户需要调用的合约：
 
