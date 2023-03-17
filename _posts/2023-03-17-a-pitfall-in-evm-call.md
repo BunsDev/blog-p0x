@@ -12,7 +12,7 @@ tags:
     - Solidity
 ---
 
-故事要从 Optimism Bedrock 说起，这些天在研究了 Optimism Bedrock 的代码，在无意中发现了一个之前一直没注意到问题：在一些 edge case 下，**EVM `CALL`（也包含 `STATICCALL`, `DELEGATECALL`） Opcode 使用的 gasLimit 可能和预期不一致**。
+故事要从 Optimism Bedrock 说起，这些天在研究 Optimism Bedrock 的代码，在无意中发现了一个之前一直没注意到问题：在一些 edge case 下，**EVM `CALL`（也包含 `STATICCALL`, `DELEGATECALL`） Opcode 使用的 gasLimit 可能和预期不一致**。
 
 一般情况下，这个设计不会对应用产生太大的安全风险，但是在 Optimism Bedrock 的设计中，这个问题可能被恶意利用，从而导致用户的资产被永久锁定，产生严重的后果，甚至 Optimism 团队在最开始也没有意识到这个问题。因此我觉得有必要写一篇文章来揭露这个很容易被忽视的问题。
 
