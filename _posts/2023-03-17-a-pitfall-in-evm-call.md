@@ -131,7 +131,7 @@ require(gasleft() >= _tx.gasLimit + FINALIZE_GAS_BUFFER + 5122); // Add more on 
 
 具体做法是，EIP-150 之后，当 EVM 在执行 Call/StaticCall/DelegateCall 时，gasLimit 最多不可以超过当前剩余的 gas 的 63/64，这样一来，如果 Call Stack 过多，可用 gasLimit 会不断减少，创造 1024 个 Call Stack 已经成为了不可能：`1 * (63/64)^1024 = 0.0000000976`。
 
-为了更深入的理解这个 63/64 规则，我翻看了一下 go-ethereum 的代码。我们先回顾一下 `CALL` opcode，它需要 7 个参数：`gas`, `address`, `value`, `argsOffset`, `argsSize`, `retOffset`, `retSize`（参考 (CALL opcode)[https://www.evm.codes/#f1?fork=merge]）。这些参数都是在 EVM 的栈中保存的，而 `gas` 参数是在栈顶的第一个参数。
+为了更深入的理解这个 63/64 规则，我翻看了一下 go-ethereum 的代码。我们先回顾一下 `CALL` opcode，它需要 7 个参数：`gas`, `address`, `value`, `argsOffset`, `argsSize`, `retOffset`, `retSize`（参考 [CALL opcode](https://www.evm.codes/#f1?fork=merge)）。这些参数都是在 EVM 的栈中保存的，而 `gas` 参数是在栈顶的第一个参数。
 
 在 go-ethereum 中，`CALL` 的执行函数是这样的，[core/vm/instructions.go > opCall](https://github.com/ethereum/go-ethereum/blob/58d0f6440ba82a0cbf327ca77b7cd795c2d687c6/core/vm/instructions.go#L664-L703)：
 
