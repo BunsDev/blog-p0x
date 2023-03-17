@@ -76,7 +76,9 @@ function finalizeWithdrawalTransaction(Types.WithdrawalTransaction memory _tx) e
 }
 ```
 
-上面的代码片段中，首先会通过交易 hash 检查交易是否已经被执行过了，接着会确认 `gasleft() > _tx.gasLimit + 20000`(`FINALIZE_GAS_BUFFER = 20000`)，即剩余的 gas 需要大于用户指定的 gasLimit，然后使用 `SafeCall.call` 来执行用户的交易。来看看 `SafeCall.call` 的实现：
+上面的代码片段中，首先会通过交易 hash 检查交易是否已经被执行过了，接着会确认 `gasleft() > _tx.gasLimit + 20000`(`FINALIZE_GAS_BUFFER = 20000`)，即剩余的 gas 需要大于用户指定的 gasLimit，然后使用 `SafeCall.call` 来执行用户的交易。
+
+再来看看 `SafeCall.call` 的实现：
 
 ```solidity
 library SafeCall {
