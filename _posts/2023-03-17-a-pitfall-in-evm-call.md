@@ -2,7 +2,7 @@
 layout: post
 title: 眼见不一定为实 —— EVM CALL OPcode 中的 gas 陷阱
 subtitle:
-date: 2023-02-17 19:00:00
+date: 2023-02-17 11:00:00
 author: Paco
 catalog: true
 header-img: img/in-post/a-pitfall-in-evm-call/bg.png
