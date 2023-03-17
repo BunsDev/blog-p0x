@@ -251,7 +251,7 @@ function finalizeWithdrawalTransaction(Types.WithdrawalTransaction memory _tx) e
 
 ## 测试用例
 
-我们参考[issue-109](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109)中的测试用例，可以构造出这个 case。
+我们参考 [issue-109](https://github.com/sherlock-audit/2023-01-optimism-judging/issues/109) 中的测试用例，可以构造出这个攻击 case。
 
 简化后的 `Portal` 合约和用户需要调用的合约：
 
@@ -416,7 +416,7 @@ Logs:
 Test result: ok. 1 passed; 0 failed; finished in 5.46ms
 ```
 
-可以看到，log 中输出的 `gas provided to call:  1369583` 表明 call 中指定的 gasLimit 已经大于 `1_368_975`，但是由于 63/64 规则，实际执行时的 gasLimit 并没有这么多，最后导致执行失败。
+可以看到，log 中输出的 `gas provided to call:  1369583` 表明 call 中指定的 gasLimit 已经大于 `1_368_975`，但是由于 63/64 规则，实际执行时的 gasLimit 并没有这么多，最后导致执行失败。这就给了攻击者故意选定一个 gasLimit 来让用户的交易失败的机会，结果可能导致用户的 ETH 被锁定在合约中。
 
 ## Bug 修复
 
