@@ -489,13 +489,13 @@ $$
 
 前文中提过，当用户创建债务时，curve 预估的清算价格为 $\sqrt{p↑ \cdot p↓}$
 
-假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，为了让借出的 crvUSD 最大，我们同时假设 p ≈ p↑（放入 band 的最大 p↑），则可以借出最多的 crvUSD 数量为：
+假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，为了让借出的 crvUSD 最大，我们同时假设 p ≈ p↑（放入 band 的最大 p↑），则可以借出最多的 crvUSD 数量为（这里我们需要考虑 `loan_discount` 的影响）：
 
 $$
 x_{effective} = (1 - r) \cdot y_{effective} \cdot p
 $$
 
-根据前面对 $y_{effective}$ 的定义，得到（这里我们需要考虑 `loan_discount` 的影响）：
+根据前面对 $y_{effective}$ 的定义，得到：
 
 $$
 x_{effective} = (1 - r) \cdot \frac{yp}{N} \cdot \sqrt{\frac{A-1}{A}} \cdot \sum_{k=0}^{N-1}(\frac{A-1}{A})^k
