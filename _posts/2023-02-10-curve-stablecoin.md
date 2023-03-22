@@ -394,32 +394,6 @@ Curve Stablecoin 在使用外部价格前会先会对这些价格进行 EMA 处�
 
 下面是关于 Curve Stablecoin 的一些常见问题
 
-#### Curve Stablecoin 的最高借贷率是多少？
-
-取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
-
-前文中提过，当用户创建债务时，curve 预估的清算价格为 $\sqrt{p↑ \cdot p↓}$
-
-假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，则可以借出最多的 crvUSD 数量为：
-
-$$
-x_{effective} = y \cdot (1-r) \cdot \sqrt{(p \cdot p \cdot (\frac{A-1}{A})^N)} = y \cdot (1-r) \cdot p \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
-$$
-
-那么最高借贷率为：
-
-$$
-(1-r) \cdot (\frac{A-1}{A})^{\sqrt{\frac{N}{2}}}
-$$
-
-根据测试代码中的设定的 $A=100$，$r=0.05$，选择 band 数量 $N=5$ 时，借贷率最高，大概为：
-
-$$
-(1-0.05) \cdot (\frac{99}{100})^{\sqrt{\frac{5}{2}}} \approx 92.64\%
-$$
-
-此时清算的起始价格为 $p$，清算结束价格为 $p \cdot 0.99^5 \approx 0.95p$，预估平均清算价格为 $p \cdot 0.99^{2.5} \approx 0.97p$
-
 #### 如何向 LLAMMA 中提供流动性？
 
 用户只能通过 `Controller`，质押 ETH 创建 crvUSD 债务，ETH 会由 `Controller` 添加到 LLAMMA 中。普通用户也没有必要妄想在 LLAMMA 中做市，LLAMMA 的特性导致它的 LP 很大概率会在交易中亏损。
@@ -443,22 +417,22 @@ $$
 
 Curve 会根据用户的 ETH 数量，用户选择的 band 宽度，以及 mint crvUSD 的数量，选择合适的 band 并添加流动性。具体的逻辑如下：
 
-假设用户的抵押品 ETH 数量为 $y$，我们可以用白皮书中的公式 10 来计算当用户的 ETH 被交易成 crvUSD 时得到的数量（为了简化，这里忽略 `loan_discount`）：
+假设用户的抵押品 ETH 数量为 $y$，我们可以用白皮书中的公式 10 来计算当某一个 band 中用户的 ETH 被交易成 crvUSD 时得到的数量（为了简化，这里忽略 `loan_discount`）：
 
 $$
 x_↓ = y\sqrt{p_↑p_↓} = yp_↑\sqrt{\frac{A-1}{A}}
 $$
 
-用户的 ETH 被放入到了 N 个 band 中，每个 band 中 ETH 的数量为 $\frac{y}{N}$，假设价格最高的 band 编号为 $n_1$，上面的公式展开后可以得到：
+在 LLAMMA 中，用户的 ETH 被平均放入到了 N 个 band 中，每个 band 中 ETH 的数量为 $\frac{y}{N}$，假设价格最高的 band 编号为 $n_1$，使用上面的公式对每个 band 进行计算后相加，可以得到：
 
 $$
-x_↓ = \frac{yp_↑}{N} \cdot \sum_{k=0}^{N-1}(\sqrt{\frac{A-1}{A}})^k
+x_↓ = \frac{yp_↑}{N} \cdot \sqrt{\frac{A-1}{A}} \cdot \sum_{k=0}^{N-1}(\frac{A-1}{A})^k
 $$
 
 我们定义一个仅与用户 band 宽度 $N$ 相关而与 band 价格无关的变量 $y_{effective}$:
 
 $$
-y_{effective} = \frac{y}{N} \cdot \sum_{k=0}^{N-1}(\sqrt{\frac{A-1}{A}})^k
+y_{effective} = \frac{y}{N} \cdot \sqrt{\frac{A-1}{A}} \cdot \sum_{k=0}^{N-1}(\frac{A-1}{A})^k
 $$
 
 同时定义 $x_↓$ 为 $x_{effective}$，上面的公式简化为：
@@ -509,6 +483,37 @@ $$
 
 上面的 $\lfloor \ \rfloor$ 表示向下取整，这样我们就可以计算出，用户的 ETH 被加入到 $[n_1 + m,\ n_1 + m + N]$ 的 band 中。在代码中，这部分计算在 `Controller._calculate_debt_n1()` 函数中实现。
 
+#### Curve Stablecoin 的最高借贷率是多少？
+
+取决于 `Controller.loan_discount` 以及用户选择的 band 数量，当选择 band 数量为 5 时（最小值），用户可以 mint 的 crvUSD 数量最多。
+
+前文中提过，当用户创建债务时，curve 预估的清算价格为 $\sqrt{p↑ \cdot p↓}$
+
+假设当前 ETH price = p，band 数量为 N，`loan_discount` 为 $r$，抵押品 ETH 数量为 `y`，为了让借出的 crvUSD 最大，我们同时假设 p ≈ p↑（放入 band 的最大 p↑），则可以借出最多的 crvUSD 数量为：
+
+$$
+x_{effective} = (1 - r) \cdot y_{effective} \cdot p
+$$
+
+根据前面对 $y_{effective}$ 的定义，得到（这里我们需要考虑 `loan_discount` 的影响）：
+
+$$
+x_{effective} = (1 - r) \cdot \frac{yp}{N} \cdot \sqrt{\frac{A-1}{A}} \cdot \sum_{k=0}^{N-1}(\frac{A-1}{A})^k
+$$
+
+那么最高借贷率为：
+
+$$
+\frac{(1 - r)}{N} \cdot \sqrt{\frac{A-1}{A}} \cdot \sum_{k=0}^{N-1}(\frac{A-1}{A})^k
+$$
+
+根据测试代码中的设定的 $A=100$，$r=0.05$，选择 band 数量 $N=5$ 时，借贷率最高，大概为：
+
+$$
+(1-0.05) \cdot \sqrt{\frac{99}{100}} \cdot \frac{1 - (\frac{99}{100})^5}{1 - \frac{99}{100}} \approx 92.65\%
+$$
+
+此时清算的起始价格为 $p$，清算结束价格为 $p \cdot 0.99^5 \approx 0.95p$，预估平均清算价格大约 $p \cdot 0.99^{2.5} \approx 0.97p$
 
 #### 如果 ETH 价格下跌，导致用户的 ETH 被部分换成 crvUSD，之后 ETH 价格又反弹至清算线以上，用户还会有损失吗？
 
