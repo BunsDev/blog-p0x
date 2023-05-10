@@ -548,7 +548,7 @@ LLAMMA 的特性决定了他是一个和 Uniswap V3 相反的 AMM，那么可以
 - 假设借出 1000 crvUSD ，ETH 被加入到了 LLAMMA 里 `[1300 ~ 1500]` 范围的 band 中
 - 此时可以用 USDC/DAI/USDT 等代币在 Uniswap V3 上选择 `[1300 ~ 1500]` 范围加入单边流动性，USDC 数量也为 1000
 
-这样当 ETH 价格下跌至 1500 时，LLAMMA 中的 ETH 会开始被卖出，但同时 Uniswap V3 中也会开始买入 ETH，这样就可以在任意价格维持 ETH 敞口不变。
+这样当 ETH 价格下跌至 1500 时，LLAMMA 中的 ETH 会开始被卖出，但同时 Uniswap V3 中也会开始买入 ETH，这样就可以在任意价格维持 ETH 敞口大致不变（但仍会有 LLAMMA 磨损造成的亏损）。
 
 如果有其他问题，欢迎在评论区留言讨论。
 
@@ -558,6 +558,12 @@ Ref:
 - [From Uniswap v3 to crvUSD LLAMMA](https://www.curve.wiki/post/from-uniswap-v3-to-crvusd-llamma-%E8%8B%B1%E6%96%87%E7%89%88)
 
 另感谢 [@0xstan](https://twitter.com/0xstan_) 和 [@0xmc](https://twitter.com/0xMC_com) 在研究过程中的交流和讨论。
+
+## PS (@2023-05-10)
+
+Curve Stablecoin 正式上线后，在 Oracle 的使用上，为了防止闪电贷对 Oracle 价格的操作，Curve 目前使用 TriCrypto, Chainlink 以及 Uniswap Twap Oracle 价格混合的方式，而不是单纯的使用 TryCrypto 价格，当然这也造成了 Curve Stablecoin 对 Chainlink 的依赖。
+
+另还有一些参数设定也和本文中的假设不同，这里不一一列举了，一切请以官方 deploy 的合约为准。
 
 
 
